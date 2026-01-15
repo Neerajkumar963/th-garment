@@ -3,7 +3,7 @@ import db from '../config/database.js';
 
 const router = express.Router();
 
-// GET /api/orders - Get all orders
+// GET /api/orders - Get all orders (excluding deleted)
 router.get('/', async (req, res) => {
   const { status } = req.query;
   
@@ -20,12 +20,13 @@ router.get('/', async (req, res) => {
         order_date,
         delivery_date
       FROM orders
+      WHERE deleted_at IS NULL
     `;
     
     const params = [];
     
     if (status) {
-      query += ' WHERE status = ?';
+      query += ' AND status = ?';
       params.push(status);
     }
     
@@ -40,6 +41,33 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/orders/recycle-bin - Get deleted orders
+router.get('/recycle-bin/list', async (req, res) => {
+  try {
+    const [orders] = await db.query(`
+      SELECT 
+        id,
+        customer_name,
+        customer_phone,
+        customer_address,
+        status,
+        total_quantity,
+        remarks,
+        order_date,
+        delivery_date,
+        deleted_at
+      FROM orders
+      WHERE deleted_at IS NOT NULL
+      ORDER BY deleted_at DESC
+    `);
+    
+    res.json(orders);
+  } catch (error) {
+    console.error('Get recycle bin error:', error);
+    res.status(500).json({ error: 'Failed to fetch deleted orders', message: error.message });
+  }
+});
+
 // GET /api/orders/:id - Get order details
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
@@ -47,7 +75,7 @@ router.get('/:id', async (req, res) => {
   try {
     // Get order
     const [orders] = await db.query(
-      'SELECT * FROM orders WHERE id = ?',
+      'SELECT * FROM orders WHERE id = ? AND deleted_at IS NULL',
       [id]
     );
     
@@ -57,7 +85,7 @@ router.get('/:id', async (req, res) => {
     
     // Get order details
     const [details] = await db.query(
-      'SELECT * FROM order_details WHERE order_id = ?',
+      'SELECT * FROM order_details WHERE order_id = ? AND deleted_at IS NULL',
       [id]
     );
     
@@ -85,7 +113,7 @@ router.post('/', async (req, res) => {
   try {
     await connection.beginTransaction();
     
-    // Calculate total quantity
+    //Calculate total quantity
     const total_quantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
     
     // Insert order
@@ -143,7 +171,7 @@ router.put('/:id/status', async (req, res) => {
   
   try {
     const [result] = await db.query(
-      'UPDATE orders SET status = ?, delivery_date = ? WHERE id = ?',
+      'UPDATE orders SET status = ?, delivery_date = ? WHERE id = ? AND deleted_at IS NULL',
       [status, status === 'delivered' ? new Date() : null, id]
     );
     
@@ -161,24 +189,117 @@ router.put('/:id/status', async (req, res) => {
   }
 });
 
-// DELETE /api/orders/:id - Delete order
+// PUT /api/orders/restore/:id - Restore deleted order
+router.put('/restore/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  const connection = await db.getConnection();
+  
+  try {
+    await connection.beginTransaction();
+    
+    // Restore order
+    const [result] = await connection.query(
+      'UPDATE orders SET deleted_at = NULL WHERE id = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Order not found in recycle bin' });
+    }
+    
+    // Restore order details
+    await connection.query(
+      'UPDATE order_details SET deleted_at = NULL WHERE order_id = ?',
+      [id]
+    );
+    
+    await connection.commit();
+    
+    res.json({ message: 'Order restored successfully' });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Restore order error:', error);
+    res.status(500).json({ error: 'Failed to restore order', message: error.message });
+  } finally {
+    connection.release();
+  }
+});
+
+// DELETE /api/orders/:id - Soft delete order
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   
+  const connection = await db.getConnection();
+  
   try {
-    const [result] = await db.query(
+    await connection.beginTransaction();
+    
+    // Soft delete order
+    const [result] = await connection.query(
+      'UPDATE orders SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    // Soft delete order details
+    await connection.query(
+      'UPDATE order_details SET deleted_at = NOW() WHERE order_id = ? AND deleted_at IS NULL',
+      [id]
+    );
+    
+    await connection.commit();
+    
+    res.json({ message: 'Order moved to recycle bin' });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Delete order error:', error);
+    res.status(500).json({ error: 'Failed to delete order', message: error.message });
+  } finally {
+    connection.release();
+  }
+});
+
+// DELETE /api/orders/permanent/:id - Permanently delete order
+router.delete('/permanent/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  const connection = await db.getConnection();
+  
+  try {
+    await connection.beginTransaction();
+    
+    // Delete order details first (foreign key)
+    await connection.query(
+      'DELETE FROM order_details WHERE order_id = ?',
+      [id]
+    );
+    
+    // Delete order
+    const [result] = await connection.query(
       'DELETE FROM orders WHERE id = ?',
       [id]
     );
     
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).json({ error: 'Order not found' });
     }
     
-    res.json({ message: 'Order deleted successfully' });
+    await connection.commit();
+    
+    res.json({ message: 'Order permanently deleted' });
   } catch (error) {
-    console.error('Delete order error:', error);
-    res.status(500).json({ error: 'Failed to delete order', message: error.message });
+    await connection.rollback();
+    console.error('Permanent delete order error:', error);
+    res.status(500).json({ error: 'Failed to permanently delete order', message: error.message });
+  } finally {
+    connection.release();
   }
 });
 

@@ -19,7 +19,7 @@ router.get('/queue', async (req, res) => {
         cc.queued_date
       FROM cloth_cutting cc
       JOIN cloth_type ct ON cc.cloth_type_id = ct.id
-      WHERE cc.status = 'queued'
+      WHERE cc.status = 'queued' AND cc.deleted_at IS NULL
       ORDER BY cc.queued_date ASC
     `);
     
@@ -47,6 +47,7 @@ router.get('/history', async (req, res) => {
         cc.completed_date
       FROM cloth_cutting cc
       JOIN cloth_type ct ON cc.cloth_type_id = ct.id
+      WHERE cc.deleted_at IS NULL
       ORDER BY COALESCE(cc.completed_date, cc.queued_date) DESC
       LIMIT 50
     `);
@@ -55,6 +56,34 @@ router.get('/history', async (req, res) => {
   } catch (error) {
     console.error('Get history error:', error);
     res.status(500).json({ error: 'Failed to fetch cutting history', message: error.message });
+  }
+});
+
+// GET /api/cutting/recycle-bin - View deleted items
+router.get('/recycle-bin', async (req, res) => {
+  try {
+    const [items] = await db.query(`
+      SELECT 
+        cc.id,
+        cc.org_dress_name,
+        cc.design,
+        cc.size,
+        cc.quantity,
+        ct.name as cloth_type,
+        cc.cloth_used,
+        cc.status,
+        cc.queued_date,
+        cc.deleted_at
+      FROM cloth_cutting cc
+      JOIN cloth_type ct ON cc.cloth_type_id = ct.id
+      WHERE cc.deleted_at IS NOT NULL
+      ORDER BY cc.deleted_at DESC
+    `);
+    
+    res.json(items);
+  } catch (error) {
+    console.error('Get recycle bin error:', error);
+    res.status(500).json({ error: 'Failed to fetch recycle bin', message: error.message });
   }
 });
 
@@ -195,13 +224,13 @@ router.put('/complete/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/cutting/queue/:id - Remove item from queue
+// DELETE /api/cutting/queue/:id - Remove item from queue (Soft Delete)
 router.delete('/queue/:id', async (req, res) => {
   const { id } = req.params;
   
   try {
     const [result] = await db.query(
-      'DELETE FROM cloth_cutting WHERE id = ? AND status = "queued"',
+      'UPDATE cloth_cutting SET deleted_at = NOW() WHERE id = ? AND status = "queued"',
       [id]
     );
     
@@ -209,10 +238,52 @@ router.delete('/queue/:id', async (req, res) => {
       return res.status(404).json({ error: 'Queue item not found or already completed' });
     }
     
-    res.json({ message: 'Item removed from queue successfully' });
+    res.json({ message: 'Item moved to recycle bin' });
   } catch (error) {
     console.error('Delete queue item error:', error);
     res.status(500).json({ error: 'Failed to delete queue item', message: error.message });
+  }
+});
+
+// PUT /api/cutting/restore/:id - Restore deleted item
+router.put('/restore/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query(
+      'UPDATE cloth_cutting SET deleted_at = NULL WHERE id = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    res.json({ message: 'Item restored successfully' });
+  } catch (error) {
+    console.error('Restore item error:', error);
+    res.status(500).json({ error: 'Failed to restore item', message: error.message });
+  }
+});
+
+// DELETE /api/cutting/permanent/:id - Permanently delete item
+router.delete('/permanent/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query(
+      'DELETE FROM cloth_cutting WHERE id = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    res.json({ message: 'Item permanently deleted' });
+  } catch (error) {
+    console.error('Permanent delete error:', error);
+    res.status(500).json({ error: 'Failed to permanently delete item', message: error.message });
   }
 });
 

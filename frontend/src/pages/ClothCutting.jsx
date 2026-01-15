@@ -8,11 +8,12 @@ import FormSelect from '../components/FormSelect';
 import { cuttingAPI } from '../services/api';
 
 export default function ClothCutting() {
+    const [activeTab, setActiveTab] = useState('queue'); // queue, history, recycle_bin
     const [queue, setQueue] = useState([]);
     const [history, setHistory] = useState([]);
+    const [deletedItems, setDeletedItems] = useState([]);
     const [clothTypes, setClothTypes] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showHistory, setShowHistory] = useState(false);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         org_dress_name: '',
@@ -24,8 +25,12 @@ export default function ClothCutting() {
     });
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (activeTab === 'recycle_bin') {
+            fetchDeletedData();
+        } else {
+            fetchData();
+        }
+    }, [activeTab]);
 
     const fetchData = async () => {
         try {
@@ -41,6 +46,19 @@ export default function ClothCutting() {
         } catch (err) {
             console.error('Error fetching cutting data:', err);
             alert('Failed to load cutting data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchDeletedData = async () => {
+        try {
+            setLoading(true);
+            const response = await cuttingAPI.getRecycleBin();
+            setDeletedItems(response.data);
+        } catch (err) {
+            console.error('Error fetching recycle bin:', err);
+            alert('Failed to load deleted items');
         } finally {
             setLoading(false);
         }
@@ -92,12 +110,12 @@ export default function ClothCutting() {
     };
 
     const handleDeleteFromQueue = async (id) => {
-        if (!confirm('Remove this item from the queue?')) {
+        if (!confirm('Move this item to Recycle Bin?')) {
             return;
         }
         try {
-            await cuttingAPI.deleteFromQueue(id);
-            alert('Item removed from queue');
+            await cuttingAPI.deleteQueueItem(id);
+            alert('Item moved to Recycle Bin');
             fetchData();
         } catch (err) {
             console.error('Error deleting from queue:', err);
@@ -105,7 +123,30 @@ export default function ClothCutting() {
         }
     };
 
-    const queueColumns = [
+    const handleRestore = async (id) => {
+        try {
+            await cuttingAPI.restoreQueueItem(id);
+            alert('Item restored successfully');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Restore error:', err);
+            alert('Failed to restore item');
+        }
+    };
+
+    const handlePermanentDelete = async (id) => {
+        if (!confirm('Are you sure? This cannot be undone.')) return;
+        try {
+            await cuttingAPI.permanentDeleteItem(id);
+            alert('Item permanently deleted');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Permanent delete error:', err);
+            alert('Failed to delete item permanently');
+        }
+    };
+
+    const baseColumns = [
         { header: 'Org/Dress Name', key: 'org_dress_name' },
         { header: 'Design', key: 'design' },
         { header: 'Size', key: 'size' },
@@ -120,7 +161,7 @@ export default function ClothCutting() {
     ];
 
     const historyColumns = [
-        ...queueColumns,
+        ...baseColumns,
         {
             header: 'Status',
             key: 'status',
@@ -137,6 +178,25 @@ export default function ClothCutting() {
         },
     ];
 
+    const recycleBinColumns = [
+        ...baseColumns,
+        {
+            header: 'Deleted At',
+            key: 'deleted_at',
+            render: (value) => new Date(value).toLocaleString()
+        },
+        {
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                    <Button size="sm" variant="success" onClick={() => handleRestore(row.id)}>Restore</Button>
+                    <Button size="sm" variant="danger" onClick={() => handlePermanentDelete(row.id)}>Forever</Button>
+                </div>
+            )
+        }
+    ];
+
     if (loading) {
         return <div className="loading">Loading...</div>;
     }
@@ -145,23 +205,46 @@ export default function ClothCutting() {
         <div>
             <div className="page-header flex-between">
                 <div>
-                    <h1 className="page-title">Cloth Cutting</h1>
+                    <h1 className="page-title">
+                        {activeTab === 'recycle_bin' ? 'Recycle Bin - Cutting' : 'Cloth Cutting'}
+                    </h1>
                     <p className="page-subtitle">Manage cutting queue and process</p>
                 </div>
                 <div className="flex gap-md">
-                    <Button variant="secondary" onClick={() => setShowHistory(!showHistory)}>
-                        {showHistory ? 'Show Queue' : 'View History'}
+                    <Button
+                        variant={activeTab === 'recycle_bin' ? 'primary' : 'secondary'}
+                        onClick={() => setActiveTab(activeTab === 'recycle_bin' ? 'queue' : 'recycle_bin')}
+                    >
+                        {activeTab === 'recycle_bin' ? '← Back to Queue' : '🗑️ Recycle Bin'}
                     </Button>
-                    <Button onClick={() => setShowAddModal(true)}>
-                        + Add to Queue
-                    </Button>
+                    {activeTab !== 'recycle_bin' && (
+                        <Button onClick={() => setShowAddModal(true)}>
+                            + Add to Queue
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {!showHistory ? (
-                <Card title={`Cutting Queue (${queue.length} items)`}>
+            {/* Tabs */}
+            <div className="tabs">
+                <button
+                    className={`tab ${activeTab === 'queue' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('queue')}
+                >
+                    Queue ({queue.length})
+                </button>
+                <button
+                    className={`tab ${activeTab === 'history' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('history')}
+                >
+                    History
+                </button>
+            </div>
+
+            {activeTab === 'queue' && (
+                <Card title="Cutting Queue">
                     <Table
-                        columns={queueColumns}
+                        columns={baseColumns}
                         data={queue}
                         actions={(row) => (
                             <>
@@ -183,9 +266,17 @@ export default function ClothCutting() {
                         )}
                     />
                 </Card>
-            ) : (
+            )}
+
+            {activeTab === 'history' && (
                 <Card title="Cutting History">
                     <Table columns={historyColumns} data={history} />
+                </Card>
+            )}
+
+            {activeTab === 'recycle_bin' && (
+                <Card title={`Deleted Items (${deletedItems.length})`}>
+                    <Table columns={recycleBinColumns} data={deletedItems} />
                 </Card>
             )}
 

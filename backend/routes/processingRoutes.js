@@ -32,7 +32,7 @@ router.get('/active', async (req, res) => {
         p.last_stage_update
       FROM processing p
       JOIN processing_stage ps ON p.current_stage_id = ps.id
-      WHERE p.is_completed = FALSE
+      WHERE p.is_completed = FALSE AND p.deleted_at IS NULL
       ORDER BY ps.stage_order, p.last_stage_update DESC
     `);
     
@@ -56,7 +56,7 @@ router.get('/delivered', async (req, res) => {
         p.date_given,
         p.last_stage_update
       FROM processing p
-      WHERE p.is_completed = TRUE
+      WHERE p.is_completed = TRUE AND p.deleted_at IS NULL
       ORDER BY p.last_stage_update DESC
       LIMIT 50
     `);
@@ -65,6 +65,30 @@ router.get('/delivered', async (req, res) => {
   } catch (error) {
     console.error('Get delivered processing error:', error);
     res.status(500).json({ error: 'Failed to fetch delivered items', message: error.message });
+  }
+});
+
+// GET /api/processing/recycle-bin - Get deleted processing items
+router.get('/recycle-bin', async (req, res) => {
+  try {
+    const [items] = await db.query(`
+      SELECT 
+        p.id,
+        p.org_dress_name,
+        p.size,
+        p.quantity,
+        p.current_stage_name,
+        p.date_given,
+        p.deleted_at
+      FROM processing p
+      WHERE p.deleted_at IS NOT NULL
+      ORDER BY p.deleted_at DESC
+    `);
+    
+    res.json(items);
+  } catch (error) {
+    console.error('Get recycle bin error:', error);
+    res.status(500).json({ error: 'Failed to fetch recycle bin', message: error.message });
   }
 });
 
@@ -80,7 +104,7 @@ router.get('/available-cut-stock', async (req, res) => {
         cs.quantity,
         cs.created_at
       FROM cut_stock cs
-      WHERE cs.status = 'available'
+      WHERE cs.status = 'available' AND cs.deleted_at IS NULL
       ORDER BY cs.created_at ASC
     `);
     
@@ -176,7 +200,7 @@ router.put('/advance/:id', async (req, res) => {
       `SELECT p.*, ps.stage_order 
        FROM processing p
        JOIN processing_stage ps ON p.current_stage_id = ps.id
-       WHERE p.id = ? AND p.is_completed = FALSE`,
+       WHERE p.id = ? AND p.is_completed = FALSE AND p.deleted_at IS NULL`,
       [id]
     );
     
@@ -226,7 +250,7 @@ router.put('/advance/:id', async (req, res) => {
   }
 });
 
-// PUT /api/processing/complete/:id - Mark processing as completed (from Processed stage)
+// PUT /api/processing/complete/:id - Mark processing as completed
 router.put('/complete/:id', async (req, res) => {
   const { id } = req.params;
   
@@ -241,7 +265,7 @@ router.put('/complete/:id', async (req, res) => {
        FROM processing p
        JOIN processing_stage ps ON p.current_stage_id = ps.id
        JOIN cut_stock cs ON p.cut_stock_id = cs.id
-       WHERE p.id = ? AND p.is_completed = FALSE`,
+       WHERE p.id = ? AND p.is_completed = FALSE AND p.deleted_at IS NULL`,
       [id]
     );
     
@@ -288,6 +312,69 @@ router.put('/complete/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to complete processing', message: error.message });
   } finally {
     connection.release();
+  }
+});
+
+// DELETE /api/processing/:id - Soft Delete
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query(
+      'UPDATE processing SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    res.json({ message: 'Item moved to recycle bin' });
+  } catch (error) {
+    console.error('Delete processing error:', error);
+    res.status(500).json({ error: 'Failed to delete item', message: error.message });
+  }
+});
+
+// PUT /api/processing/restore/:id - Restore deleted item
+router.put('/restore/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query(
+      'UPDATE processing SET deleted_at = NULL WHERE id = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Item not found in recycle bin' });
+    }
+    
+    res.json({ message: 'Item restored successfully' });
+  } catch (error) {
+    console.error('Restore processing error:', error);
+    res.status(500).json({ error: 'Failed to restore item', message: error.message });
+  }
+});
+
+// DELETE /api/processing/permanent/:id - Permanent Delete
+router.delete('/permanent/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query(
+      'DELETE FROM processing WHERE id = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    res.json({ message: 'Item permanently deleted' });
+  } catch (error) {
+    console.error('Permanent delete processing error:', error);
+    res.status(500).json({ error: 'Failed to permanently delete item', message: error.message });
   }
 });
 

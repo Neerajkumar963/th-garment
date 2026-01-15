@@ -19,24 +19,29 @@ const STAGE_ORDER = [
 ];
 
 export default function Processing() {
+    const [activeTab, setActiveTab] = useState('active'); // active, delivered, recycle_bin
     const [activeItems, setActiveItems] = useState([]);
     const [deliveredItems, setDeliveredItems] = useState([]);
+    const [deletedItems, setDeletedItems] = useState([]);
     const [cutStock, setCutStock] = useState([]);
-    const [showDelivered, setShowDelivered] = useState(false);
     const [showStartModal, setShowStartModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [selectedCutStock, setSelectedCutStock] = useState('');
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (activeTab === 'recycle_bin') {
+            fetchDeletedData();
+        } else {
+            fetchData();
+        }
+    }, [activeTab]);
 
     const fetchData = async () => {
         try {
             setLoading(true);
             const [activeRes, deliveredRes, cutStockRes] = await Promise.all([
-                processingAPI.getActive(),
-                processingAPI.getDelivered(),
+                processingAPI.getActiveItems(),
+                processingAPI.getDeliveredItems(),
                 processingAPI.getAvailableCutStock(),
             ]);
             setActiveItems(activeRes.data);
@@ -45,6 +50,19 @@ export default function Processing() {
         } catch (err) {
             console.error('Error fetching processing data:', err);
             alert('Failed to load processing data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchDeletedData = async () => {
+        try {
+            setLoading(true);
+            const response = await processingAPI.getRecycleBin();
+            setDeletedItems(response.data);
+        } catch (err) {
+            console.error('Error fetching recycle bin:', err);
+            alert('Failed to load deleted items');
         } finally {
             setLoading(false);
         }
@@ -92,7 +110,44 @@ export default function Processing() {
         }
     };
 
-    const processingColumns = [
+    const handleDelete = async (id) => {
+        if (!confirm('Move this item to Recycle Bin?')) {
+            return;
+        }
+        try {
+            await processingAPI.deleteItem(id);
+            alert('Item moved to Recycle Bin');
+            fetchData();
+        } catch (err) {
+            console.error('Error deleting item:', err);
+            alert(err.response?.data?.message || 'Failed to delete item');
+        }
+    };
+
+    const handleRestore = async (id) => {
+        try {
+            await processingAPI.restoreItem(id);
+            alert('Item restored successfully');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Restore error:', err);
+            alert('Failed to restore item');
+        }
+    };
+
+    const handlePermanentDelete = async (id) => {
+        if (!confirm('Are you sure? This cannot be undone.')) return;
+        try {
+            await processingAPI.permanentDeleteItem(id);
+            alert('Item permanently deleted');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Permanent delete error:', err);
+            alert('Failed to delete item permanently');
+        }
+    };
+
+    const baseColumns = [
         { header: 'Org/Dress Name', key: 'org_dress_name' },
         { header: 'Size', key: 'size' },
         { header: 'Quantity', key: 'quantity' },
@@ -115,8 +170,20 @@ export default function Processing() {
             key: 'last_stage_update',
             render: (value) => new Date(value).toLocaleDateString()
         },
+        // Common Action for deletion
+        {
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>Delete</Button>
+            )
+        }
     ];
 
+    // For Active tab, we add process-specific actions
+    // This is handled inside the render of the table in the component body
+
+    // For Delivered tab
     const deliveredColumns = [
         { header: 'Org/Dress Name', key: 'org_dress_name' },
         { header: 'Size', key: 'size' },
@@ -127,6 +194,35 @@ export default function Processing() {
             key: 'last_stage_update',
             render: (value) => new Date(value).toLocaleDateString()
         },
+        {
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>Delete</Button>
+            )
+        }
+    ];
+
+    const recycleBinColumns = [
+        { header: 'Org/Dress Name', key: 'org_dress_name' },
+        { header: 'Size', key: 'size' },
+        { header: 'Quantity', key: 'quantity' },
+        { header: 'Stage', key: 'current_stage_name' },
+        {
+            header: 'Deleted At',
+            key: 'deleted_at',
+            render: (value) => new Date(value).toLocaleString()
+        },
+        {
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                    <Button size="sm" variant="success" onClick={() => handleRestore(row.id)}>Restore</Button>
+                    <Button size="sm" variant="danger" onClick={() => handlePermanentDelete(row.id)}>Forever</Button>
+                </div>
+            )
+        }
     ];
 
     // Group active items by stage
@@ -147,20 +243,43 @@ export default function Processing() {
         <div>
             <div className="page-header flex-between">
                 <div>
-                    <h1 className="page-title">Processing</h1>
+                    <h1 className="page-title">
+                        {activeTab === 'recycle_bin' ? 'Recycle Bin - Processing' : 'Processing'}
+                    </h1>
                     <p className="page-subtitle">Track items through production stages</p>
                 </div>
                 <div className="flex gap-md">
-                    <Button variant="secondary" onClick={() => setShowDelivered(!showDelivered)}>
-                        {showDelivered ? 'Show Active' : 'View Delivered'}
+                    <Button
+                        variant={activeTab === 'recycle_bin' ? 'primary' : 'secondary'}
+                        onClick={() => setActiveTab(activeTab === 'recycle_bin' ? 'active' : 'recycle_bin')}
+                    >
+                        {activeTab === 'recycle_bin' ? '← Back to Processing' : '🗑️ Recycle Bin'}
                     </Button>
-                    <Button onClick={() => setShowStartModal(true)}>
-                        + Start Processing
-                    </Button>
+                    {activeTab !== 'recycle_bin' && (
+                        <Button onClick={() => setShowStartModal(true)}>
+                            + Start Processing
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {!showDelivered ? (
+            {/* Tabs */}
+            <div className="tabs">
+                <button
+                    className={`tab ${activeTab === 'active' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('active')}
+                >
+                    Active
+                </button>
+                <button
+                    className={`tab ${activeTab === 'delivered' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('delivered')}
+                >
+                    Delivered
+                </button>
+            </div>
+
+            {activeTab === 'active' && (
                 <>
                     {activeItems.length === 0 ? (
                         <Card>
@@ -175,7 +294,7 @@ export default function Processing() {
                                 return (
                                     <Card key={stageName} title={`${stageName} (${stageItems.length})`} className="mb-lg">
                                         <Table
-                                            columns={processingColumns}
+                                            columns={baseColumns.filter(c => c.key !== 'actions')} // Use custom actions with Next/Complete buttons
                                             data={stageItems}
                                             actions={(row) => (
                                                 <>
@@ -196,6 +315,7 @@ export default function Processing() {
                                                             Complete
                                                         </Button>
                                                     )}
+                                                    <Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>Delete</Button>
                                                 </>
                                             )}
                                         />
@@ -205,9 +325,17 @@ export default function Processing() {
                         </>
                     )}
                 </>
-            ) : (
+            )}
+
+            {activeTab === 'delivered' && (
                 <Card title={`Delivered Items (${deliveredItems.length})`}>
                     <Table columns={deliveredColumns} data={deliveredItems} />
+                </Card>
+            )}
+
+            {activeTab === 'recycle_bin' && (
+                <Card title={`Deleted Items (${deletedItems.length})`}>
+                    <Table columns={recycleBinColumns} data={deletedItems} />
                 </Card>
             )}
 

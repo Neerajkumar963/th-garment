@@ -36,17 +36,28 @@ export const cuttingAPI = {
   getClothTypes: () => api.get('/cutting/cloth-types'),
   addToQueue: (data) => api.post('/cutting/queue', data),
   completeCutting: (id) => api.put(`/cutting/complete/${id}`),
-  deleteFromQueue: (id) => api.delete(`/cutting/queue/${id}`),
+  deleteQueueItem: (id) => api.delete(`/cutting/queue/${id}`), // Soft Delete now
+  
+  // Cutting Soft Delete
+  getRecycleBin: () => api.get('/cutting/recycle-bin'),
+  restoreQueueItem: (id) => api.put(`/cutting/restore/${id}`),
+  permanentDeleteItem: (id) => api.delete(`/cutting/permanent/${id}`),
 };
 
 // Processing API
 export const processingAPI = {
-  getActive: () => api.get('/processing/active'),
-  getDelivered: () => api.get('/processing/delivered'),
+  getActiveItems: () => api.get('/processing/active'),
+  getDeliveredItems: () => api.get('/processing/delivered'),
   getAvailableCutStock: () => api.get('/processing/available-cut-stock'),
   startProcessing: (data) => api.post('/processing/start', data),
   advanceStage: (id) => api.put(`/processing/advance/${id}`),
   completeProcessing: (id) => api.put(`/processing/complete/${id}`),
+  deleteItem: (id) => api.delete(`/processing/${id}`), // Soft Delete
+  
+  // Processing Soft Delete
+  getRecycleBin: () => api.get('/processing/recycle-bin'),
+  restoreItem: (id) => api.put(`/processing/restore/${id}`),
+  permanentDeleteItem: (id) => api.delete(`/processing/permanent/${id}`),
 };
 
 // Stock API
@@ -59,6 +70,12 @@ export const stockAPI = {
   addDeadStock: (data) => api.post('/stock/dead', data),
   getClothTypes: () => api.get('/stock/cloth-types'),
   addClothType: (data) => api.post('/stock/cloth-types', data),
+  
+  // Stock Soft Delete
+  deleteStock: (type, id) => api.delete(`/stock/${type}/${id}`),
+  getStockRecycleBin: (type) => api.get(`/stock/recycle-bin/${type}`),
+  restoreStock: (type, id) => api.put(`/stock/restore/${type}/${id}`),
+  permanentDeleteStock: (type, id) => api.delete(`/stock/permanent/${type}/${id}`),
 };
 
 // Orders API
@@ -68,6 +85,10 @@ export const ordersAPI = {
   create: (data) => api.post('/orders', data),
   updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
   delete: (id) => api.delete(`/orders/${id}`),
+  // Recycle Bin
+  getRecycleBin: () => api.get('/orders/recycle-bin/list'),
+  restore: (id) => api.put(`/orders/restore/${id}`),
+  permanentDelete: (id) => api.delete(`/orders/permanent/${id}`),
 };
 
 export default api;

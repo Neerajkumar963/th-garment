@@ -16,7 +16,7 @@ router.get('/summary', async (req, res) => {
     );
     
     const [sellingStockResult] = await db.query(
-      'SELECT SUM(quantity) as total FROM selling_stock WHERE status = "available"'
+      'SELECT COUNT(*) as total FROM selling_stock WHERE status = "available"'
     );
     
     // Get processing items count

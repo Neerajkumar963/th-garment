@@ -14,6 +14,11 @@ export default function Stock() {
     const [sellingStock, setSellingStock] = useState([]);
     const [deadStock, setDeadStock] = useState([]);
     const [clothTypes, setClothTypes] = useState([]);
+
+    // Recycle Bin State
+    const [showRecycleBin, setShowRecycleBin] = useState(false);
+    const [deletedItems, setDeletedItems] = useState([]);
+
     const [showAddClothModal, setShowAddClothModal] = useState(false);
     const [showAddDeadModal, setShowAddDeadModal] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -29,12 +34,15 @@ export default function Stock() {
     });
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (showRecycleBin) {
+            fetchDeletedData();
+        } else {
+            fetchData();
+        }
+    }, [activeTab, showRecycleBin]);
 
     const fetchData = async () => {
         try {
-            console.log('Fetching stock data...');
             setLoading(true);
             const [clothRes, cutRes, sellingRes, deadRes, typesRes] = await Promise.all([
                 stockAPI.getClothStock(),
@@ -43,16 +51,27 @@ export default function Stock() {
                 stockAPI.getDeadStock(),
                 stockAPI.getClothTypes(),
             ]);
-            console.log('Cloth stock data received:', clothRes.data);
             setClothStock(clothRes.data);
             setCutStock(cutRes.data);
             setSellingStock(sellingRes.data);
             setDeadStock(deadRes.data);
             setClothTypes(typesRes.data);
-            console.log('State updated successfully');
         } catch (err) {
             console.error('Error fetching stock data:', err);
             alert('Failed to load stock data');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchDeletedData = async () => {
+        try {
+            setLoading(true);
+            const response = await stockAPI.getStockRecycleBin(activeTab);
+            setDeletedItems(response.data);
+        } catch (err) {
+            console.error('Error fetching deleted stock:', err);
+            alert('Failed to load recycle bin');
         } finally {
             setLoading(false);
         }
@@ -94,152 +113,164 @@ export default function Stock() {
         }
     };
 
-    const clothColumns = [
-        { header: 'Cloth Type', key: 'cloth_type' },
-        { header: 'Description', key: 'description' },
-        {
-            header: 'Quantity',
-            key: 'quantity',
-            render: (value, row) => `${value} ${row.unit}`
-        },
-        {
-            header: 'Last Updated',
-            key: 'last_updated',
-            render: (value) => new Date(value).toLocaleString()
-        },
-    ];
+    const handleDelete = async (id, type = activeTab) => {
+        if (!confirm('Move this item to Recycle Bin?')) return;
+        try {
+            await stockAPI.deleteStock(type, id);
+            alert('Item moved to Recycle Bin');
+            fetchData();
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete item');
+        }
+    };
 
-    const cutColumns = [
-        { header: 'Org/Dress Name', key: 'org_dress_name' },
-        { header: 'Design', key: 'design' },
-        { header: 'Size', key: 'size' },
-        { header: 'Quantity', key: 'quantity' },
-        {
-            header: 'Status',
-            key: 'status',
-            render: (value) => (
-                <span className={`badge badge-${value === 'available' ? 'success' : value === 'in_processing' ? 'info' : 'secondary'}`}>
-                    {value.replace('_', ' ')}
-                </span>
+    const handleRestore = async (id) => {
+        try {
+            await stockAPI.restoreStock(activeTab, id);
+            alert('Item restored successfully');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Restore error:', err);
+            alert('Failed to restore item');
+        }
+    };
+
+    const handlePermanentDelete = async (id) => {
+        if (!confirm('Are you sure? This cannot be undone.')) return;
+        try {
+            await stockAPI.permanentDeleteStock(activeTab, id);
+            alert('Item permanently deleted');
+            fetchDeletedData();
+        } catch (err) {
+            console.error('Permanent delete error:', err);
+            alert('Failed to delete item permanently');
+        }
+    };
+
+    // Columns for Active View
+    const getColumns = () => {
+        const commonActions = {
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>Delete</Button>
             )
-        },
-        {
-            header: 'Created',
-            key: 'created_at',
-            render: (value) => new Date(value).toLocaleDateString()
-        },
-    ];
+        };
 
-    const sellingColumns = [
-        { header: 'Org/Dress Name', key: 'org_dress_name' },
-        { header: 'Design', key: 'design' },
-        { header: 'Size', key: 'size' },
-        { header: 'Quantity', key: 'quantity' },
-        {
-            header: 'Status',
-            key: 'status',
-            render: (value) => (
-                <span className={`badge badge-${value === 'available' ? 'success' : value === 'reserved' ? 'warning' : 'secondary'}`}>
-                    {value}
-                </span>
+        switch (activeTab) {
+            case 'cloth':
+                return [
+                    { header: 'Cloth Type', key: showRecycleBin ? 'cloth_type' : 'cloth_type' }, // Handle join name
+                    { header: 'Description', key: 'description' },
+                    { header: 'Quantity', key: 'quantity', render: (v, r) => `${v} ${r.unit || 'meters'}` },
+                    { header: 'Last Updated', key: showRecycleBin ? 'deleted_at' : 'last_updated', render: (v) => new Date(v).toLocaleString() },
+                    !showRecycleBin && commonActions
+                ].filter(Boolean);
+            case 'cut':
+                return [
+                    { header: 'Org/Dress Name', key: 'org_dress_name' },
+                    { header: 'Design', key: 'design' },
+                    { header: 'Size', key: 'size' },
+                    { header: 'Quantity', key: 'quantity' },
+                    { header: 'Status', key: 'status' },
+                    { header: showRecycleBin ? 'Deleted At' : 'Created', key: showRecycleBin ? 'deleted_at' : 'created_at', render: (v) => new Date(v).toLocaleDateString() },
+                    !showRecycleBin && commonActions
+                ].filter(Boolean);
+            case 'selling':
+                return [
+                    { header: 'Org/Dress Name', key: 'org_dress_name' },
+                    { header: 'Design', key: 'design' },
+                    { header: 'Size', key: 'size' },
+                    { header: 'Quantity', key: 'quantity' },
+                    { header: 'Status', key: 'status' },
+                    { header: showRecycleBin ? 'Deleted At' : 'Created', key: showRecycleBin ? 'deleted_at' : 'created_at', render: (v) => new Date(v).toLocaleDateString() },
+                    !showRecycleBin && commonActions
+                ].filter(Boolean);
+            case 'dead':
+                return [
+                    { header: 'Item Name', key: 'item_name' },
+                    { header: 'Size', key: 'size' },
+                    { header: 'Quantity', key: 'quantity' },
+                    { header: 'Reason', key: 'reason' },
+                    { header: showRecycleBin ? 'Deleted At' : 'Date', key: showRecycleBin ? 'deleted_at' : 'moved_date', render: (v) => new Date(v).toLocaleDateString() },
+                    !showRecycleBin && commonActions
+                ].filter(Boolean);
+            default: return [];
+        }
+    };
+
+    // Columns for Recycle Bin View (with Restore actions)
+    const getRecycleBinColumns = () => {
+        const baseColumns = getColumns();
+        // Remove the standard actions column if present
+        const columns = baseColumns.filter(col => col.key !== 'actions');
+
+        // Add Restore/Delete Forever actions
+        columns.push({
+            header: 'Actions',
+            key: 'actions',
+            render: (_, row) => (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                    <Button size="sm" variant="success" onClick={() => handleRestore(row.id)}>Restore</Button>
+                    <Button size="sm" variant="danger" onClick={() => handlePermanentDelete(row.id)}>Forever</Button>
+                </div>
             )
-        },
-        {
-            header: 'Created',
-            key: 'created_at',
-            render: (value) => new Date(value).toLocaleDateString()
-        },
-    ];
+        });
+        return columns;
+    };
 
-    const deadColumns = [
-        { header: 'Item Name', key: 'item_name' },
-        { header: 'Size', key: 'size' },
-        { header: 'Quantity', key: 'quantity' },
-        { header: 'Reason', key: 'reason' },
-        {
-            header: 'Moved Date',
-            key: 'moved_date',
-            render: (value) => new Date(value).toLocaleDateString()
-        },
-    ];
+    if (loading) return <div className="loading">Loading...</div>;
 
-    if (loading) {
-        return <div className="loading">Loading...</div>;
-    }
+    const currentData = showRecycleBin ? deletedItems : (
+        activeTab === 'cloth' ? clothStock :
+            activeTab === 'cut' ? cutStock :
+                activeTab === 'selling' ? sellingStock :
+                    activeTab === 'dead' ? deadStock : []
+    );
 
     return (
         <div>
             <div className="page-header flex-between">
                 <div>
-                    <h1 className="page-title">Stock Management</h1>
-                    <p className="page-subtitle">Monitor and manage all inventory</p>
+                    <h1 className="page-title">{showRecycleBin ? `Recycle Bin - ${activeTab.toUpperCase()}` : 'Stock Management'}</h1>
+                    <p className="page-subtitle">{showRecycleBin ? 'Manage deleted items' : 'Monitor and manage all inventory'}</p>
                 </div>
                 <div className="flex gap-md">
-                    {activeTab === 'cloth' && (
-                        <Button onClick={() => setShowAddClothModal(true)}>
-                            + Add Cloth Stock
-                        </Button>
+                    <Button
+                        variant={showRecycleBin ? 'primary' : 'secondary'}
+                        onClick={() => { setShowRecycleBin(!showRecycleBin); setDeletedItems([]); }}
+                    >
+                        {showRecycleBin ? '← Back to Stock' : '🗑️ Recycle Bin'}
+                    </Button>
+                    {!showRecycleBin && activeTab === 'cloth' && (
+                        <Button onClick={() => setShowAddClothModal(true)}>+ Add Cloth Stock</Button>
                     )}
-                    {activeTab === 'dead' && (
-                        <Button onClick={() => setShowAddDeadModal(true)}>
-                            + Add Dead Stock
-                        </Button>
+                    {!showRecycleBin && activeTab === 'dead' && (
+                        <Button onClick={() => setShowAddDeadModal(true)}>+ Add Dead Stock</Button>
                     )}
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="tabs">
-                <button
-                    className={`tab ${activeTab === 'cloth' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('cloth')}
-                >
-                    Cloth Stock
-                </button>
-                <button
-                    className={`tab ${activeTab === 'cut' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('cut')}
-                >
-                    Cut Stock
-                </button>
-                <button
-                    className={`tab ${activeTab === 'selling' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('selling')}
-                >
-                    Selling Stock
-                </button>
-                <button
-                    className={`tab ${activeTab === 'dead' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('dead')}
-                >
-                    Dead Stock
-                </button>
+                {['cloth', 'cut', 'selling', 'dead'].map(tab => (
+                    <button
+                        key={tab}
+                        className={`tab ${activeTab === tab ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab)}
+                    >
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)} Stock
+                    </button>
+                ))}
             </div>
 
-            {/* Tab Content */}
-            {activeTab === 'cloth' && (
-                <Card title={`Cloth Stock (${clothStock.length} types)`}>
-                    <Table columns={clothColumns} data={clothStock} />
-                </Card>
-            )}
-
-            {activeTab === 'cut' && (
-                <Card title={`Cut Stock (${cutStock.length} items)`}>
-                    <Table columns={cutColumns} data={cutStock} />
-                </Card>
-            )}
-
-            {activeTab === 'selling' && (
-                <Card title={`Selling Stock (${sellingStock.length} items)`}>
-                    <Table columns={sellingColumns} data={sellingStock} />
-                </Card>
-            )}
-
-            {activeTab === 'dead' && (
-                <Card title={`Dead Stock (${deadStock.length} items)`}>
-                    <Table columns={deadColumns} data={deadStock} />
-                </Card>
-            )}
+            <Card title={`${showRecycleBin ? 'Deleted' : ''} ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Stock (${currentData.length})`}>
+                <Table
+                    columns={showRecycleBin ? getRecycleBinColumns() : getColumns()}
+                    data={currentData}
+                />
+            </Card>
 
             {/* Add Cloth Stock Modal */}
             <Modal
@@ -248,12 +279,8 @@ export default function Stock() {
                 title="Add Cloth Stock"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setShowAddClothModal(false)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" form="add-cloth-form">
-                            Add Stock
-                        </Button>
+                        <Button variant="secondary" onClick={() => setShowAddClothModal(false)}>Cancel</Button>
+                        <Button type="submit" form="add-cloth-form">Add Stock</Button>
                     </>
                 }
             >
@@ -264,12 +291,8 @@ export default function Stock() {
                         value={clothFormData.cloth_type_id}
                         onChange={(e) => setClothFormData(prev => ({ ...prev, cloth_type_id: e.target.value }))}
                         required
-                        options={clothTypes.map(ct => ({
-                            value: ct.id,
-                            label: ct.name
-                        }))}
+                        options={clothTypes.map(ct => ({ value: ct.id, label: ct.name }))}
                     />
-
                     <FormInput
                         label="Quantity (meters)"
                         name="quantity"
@@ -290,12 +313,8 @@ export default function Stock() {
                 title="Add to Dead Stock"
                 footer={
                     <>
-                        <Button variant="secondary" onClick={() => setShowAddDeadModal(false)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" form="add-dead-form">
-                            Add to Dead Stock
-                        </Button>
+                        <Button variant="secondary" onClick={() => setShowAddDeadModal(false)}>Cancel</Button>
+                        <Button type="submit" form="add-dead-form">Add to Dead Stock</Button>
                     </>
                 }
             >
@@ -308,7 +327,6 @@ export default function Stock() {
                         required
                         placeholder="e.g., Shirt X"
                     />
-
                     <FormInput
                         label="Size"
                         name="size"
@@ -316,7 +334,6 @@ export default function Stock() {
                         onChange={(e) => setDeadFormData(prev => ({ ...prev, size: e.target.value }))}
                         placeholder="e.g., M, L (optional)"
                     />
-
                     <FormInput
                         label="Quantity"
                         name="quantity"
@@ -326,7 +343,6 @@ export default function Stock() {
                         required
                         min="1"
                     />
-
                     <div className="form-group">
                         <label className="form-label" htmlFor="reason">Reason</label>
                         <textarea

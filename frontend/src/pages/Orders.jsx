@@ -9,6 +9,8 @@ import { ordersAPI } from '../services/api';
 
 export default function Orders() {
     const [orders, setOrders] = useState([]);
+    const [deletedOrders, setDeletedOrders] = useState([]);
+    const [showRecycleBin, setShowRecycleBin] = useState(false);
     const [filterStatus, setFilterStatus] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -25,8 +27,12 @@ export default function Orders() {
     });
 
     useEffect(() => {
-        fetchOrders();
-    }, [filterStatus]);
+        if (showRecycleBin) {
+            fetchDeletedOrders();
+        } else {
+            fetchOrders();
+        }
+    }, [filterStatus, showRecycleBin]);
 
     const fetchOrders = async () => {
         try {
@@ -36,6 +42,19 @@ export default function Orders() {
         } catch (err) {
             console.error('Error fetching orders:', err);
             alert('Failed to load orders');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchDeletedOrders = async () => {
+        try {
+            setLoading(true);
+            const response = await ordersAPI.getRecycleBin();
+            setDeletedOrders(response.data);
+        } catch (err) {
+            console.error('Error fetching deleted orders:', err);
+            alert('Failed to load deleted orders');
         } finally {
             setLoading(false);
         }
@@ -84,15 +103,40 @@ export default function Orders() {
     };
 
     const handleDeleteOrder = async (id) => {
-        if (!confirm('Delete this order?')) {
+        if (!confirm('Move this order to Recycle Bin?')) {
             return;
         }
         try {
             await ordersAPI.delete(id);
-            alert('Order deleted successfully');
+            alert('Order moved to Recycle Bin');
             fetchOrders();
         } catch (err) {
             console.error('Error deleting order:', err);
+            alert(err.response?.data?.message || 'Failed to delete order');
+        }
+    };
+
+    const handleRestoreOrder = async (id) => {
+        try {
+            await ordersAPI.restore(id);
+            alert('Order restored successfully');
+            fetchDeletedOrders();
+        } catch (err) {
+            console.error('Error restoring order:', err);
+            alert(err.response?.data?.message || 'Failed to restore order');
+        }
+    };
+
+    const handlePermanentDelete = async (id) => {
+        if (!confirm('Are you sure you want to permanently delete this order? This cannot be undone.')) {
+            return;
+        }
+        try {
+            await ordersAPI.permanentDelete(id);
+            alert('Order permanently deleted');
+            fetchDeletedOrders();
+        } catch (err) {
+            console.error('Error permanently deleting order:', err);
             alert(err.response?.data?.message || 'Failed to delete order');
         }
     };
@@ -176,6 +220,13 @@ export default function Orders() {
         },
     ];
 
+    const deletedOrderColumns = [
+        { header: 'ID', key: 'id' },
+        { header: 'Customer', key: 'customer_name' },
+        { header: 'Status', key: 'status', render: (value) => <span className={`badge badge-${getStatusBadge(value)}`}>{value}</span> },
+        { header: 'Deleted At', key: 'deleted_at', render: (value) => new Date(value).toLocaleString() },
+    ];
+
     if (loading) {
         return <div className="loading">Loading...</div>;
     }
@@ -184,85 +235,124 @@ export default function Orders() {
         <div>
             <div className="page-header flex-between">
                 <div>
-                    <h1 className="page-title">Orders</h1>
-                    <p className="page-subtitle">Manage customer orders</p>
+                    <h1 className="page-title">{showRecycleBin ? 'Recycle Bin - deleted Orders' : 'Orders'}</h1>
+                    <p className="page-subtitle">{showRecycleBin ? 'Manage deleted orders' : 'Manage customer orders'}</p>
                 </div>
-                <Button onClick={() => setShowCreateModal(true)}>
-                    + Create Order
-                </Button>
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="tabs">
-                <button
-                    className={`tab ${filterStatus === '' ? 'active' : ''}`}
-                    onClick={() => setFilterStatus('')}
-                >
-                    All Orders
-                </button>
-                <button
-                    className={`tab ${filterStatus === 'pending' ? 'active' : ''}`}
-                    onClick={() => setFilterStatus('pending')}
-                >
-                    Pending
-                </button>
-                <button
-                    className={`tab ${filterStatus === 'in-process' ? 'active' : ''}`}
-                    onClick={() => setFilterStatus('in-process')}
-                >
-                    In-Process
-                </button>
-                <button
-                    className={`tab ${filterStatus === 'ready' ? 'active' : ''}`}
-                    onClick={() => setFilterStatus('ready')}
-                >
-                    Ready
-                </button>
-                <button
-                    className={`tab ${filterStatus === 'delivered' ? 'active' : ''}`}
-                    onClick={() => setFilterStatus('delivered')}
-                >
-                    Delivered
-                </button>
-            </div>
-
-            <Card title={`Orders (${orders.length})`}>
-                <Table
-                    columns={orderColumns}
-                    data={orders}
-                    actions={(row) => (
-                        <>
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handleViewDetails(row)}
-                            >
-                                View
-                            </Button>
-                            {row.status !== 'delivered' && (
-                                <FormSelect
-                                    name="status"
-                                    value={row.status}
-                                    onChange={(e) => handleUpdateStatus(row.id, e.target.value)}
-                                    options={[
-                                        { value: 'pending', label: 'Pending' },
-                                        { value: 'in-process', label: 'In-Process' },
-                                        { value: 'ready', label: 'Ready' },
-                                        { value: 'delivered', label: 'Delivered' },
-                                    ]}
-                                />
-                            )}
-                            <Button
-                                size="sm"
-                                variant="danger"
-                                onClick={() => handleDeleteOrder(row.id)}
-                            >
-                                Delete
-                            </Button>
-                        </>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <Button
+                        variant={showRecycleBin ? 'primary' : 'secondary'}
+                        onClick={() => setShowRecycleBin(!showRecycleBin)}
+                    >
+                        {showRecycleBin ? '← Back to Orders' : '🗑️ Recycle Bin'}
+                    </Button>
+                    {!showRecycleBin && (
+                        <Button onClick={() => setShowCreateModal(true)}>
+                            + Create Order
+                        </Button>
                     )}
-                />
-            </Card>
+                </div>
+            </div>
+
+            {/* Filter Tabs - Only show when not in Recycle Bin */}
+            {!showRecycleBin && (
+                <div className="tabs">
+                    <button
+                        className={`tab ${filterStatus === '' ? 'active' : ''}`}
+                        onClick={() => setFilterStatus('')}
+                    >
+                        All Orders
+                    </button>
+                    <button
+                        className={`tab ${filterStatus === 'pending' ? 'active' : ''}`}
+                        onClick={() => setFilterStatus('pending')}
+                    >
+                        Pending
+                    </button>
+                    <button
+                        className={`tab ${filterStatus === 'in-process' ? 'active' : ''}`}
+                        onClick={() => setFilterStatus('in-process')}
+                    >
+                        In-Process
+                    </button>
+                    <button
+                        className={`tab ${filterStatus === 'ready' ? 'active' : ''}`}
+                        onClick={() => setFilterStatus('ready')}
+                    >
+                        Ready
+                    </button>
+                    <button
+                        className={`tab ${filterStatus === 'delivered' ? 'active' : ''}`}
+                        onClick={() => setFilterStatus('delivered')}
+                    >
+                        Delivered
+                    </button>
+                </div>
+            )}
+
+            {showRecycleBin ? (
+                <Card title={`Deleted Orders (${deletedOrders.length})`}>
+                    <Table
+                        columns={deletedOrderColumns}
+                        data={deletedOrders}
+                        actions={(row) => (
+                            <>
+                                <Button
+                                    size="sm"
+                                    variant="success"
+                                    onClick={() => handleRestoreOrder(row.id)}
+                                >
+                                    Restore
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="danger"
+                                    onClick={() => handlePermanentDelete(row.id)}
+                                >
+                                    Delete Forever
+                                </Button>
+                            </>
+                        )}
+                    />
+                </Card>
+            ) : (
+                <Card title={`Orders (${orders.length})`}>
+                    <Table
+                        columns={orderColumns}
+                        data={orders}
+                        actions={(row) => (
+                            <>
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => handleViewDetails(row)}
+                                >
+                                    View
+                                </Button>
+                                {row.status !== 'delivered' && (
+                                    <FormSelect
+                                        name="status"
+                                        value={row.status}
+                                        onChange={(e) => handleUpdateStatus(row.id, e.target.value)}
+                                        options={[
+                                            { value: 'pending', label: 'Pending' },
+                                            { value: 'in-process', label: 'In-Process' },
+                                            { value: 'ready', label: 'Ready' },
+                                            { value: 'delivered', label: 'Delivered' },
+                                        ]}
+                                    />
+                                )}
+                                <Button
+                                    size="sm"
+                                    variant="danger"
+                                    onClick={() => handleDeleteOrder(row.id)}
+                                >
+                                    Delete
+                                </Button>
+                            </>
+                        )}
+                    />
+                </Card>
+            )}
 
             {/* Create Order Modal */}
             <Modal
