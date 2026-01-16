@@ -26,6 +26,7 @@ export default function Processing() {
     const [cutStock, setCutStock] = useState([]);
     const [showStartModal, setShowStartModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedCutStock, setSelectedCutStock] = useState('');
 
     useEffect(() => {
@@ -47,9 +48,10 @@ export default function Processing() {
             setActiveItems(activeRes.data);
             setDeliveredItems(deliveredRes.data);
             setCutStock(cutStockRes.data);
+            setError(null);
         } catch (err) {
             console.error('Error fetching processing data:', err);
-            alert('Failed to load processing data');
+            setError('Failed to load processing data. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -238,6 +240,16 @@ export default function Processing() {
 
     if (loading) {
         return <div className="loading">Loading...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="empty-state text-danger">
+                <h3>Error Loading Data</h3>
+                <p>{error}</p>
+                <button className="btn btn-primary" onClick={fetchData}>Retry</button>
+            </div>
+        );
     }
 
     return (

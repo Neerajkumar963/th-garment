@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -10,6 +11,7 @@ import Orders from './pages/Orders';
 function AppContent() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -18,6 +20,7 @@ function AppContent() {
     };
 
     return (
+
         <Routes>
             <Route path="/login" element={<Login />} />
 
@@ -27,15 +30,6 @@ function AppContent() {
                         <aside className="sidebar">
                             <div className="sidebar-header">
                                 <h1 className="sidebar-title">TH GARMENT</h1>
-                                {user && (
-                                    <div style={{
-                                        marginTop: 'var(--spacing-md)',
-                                        fontSize: '0.75rem',
-                                        color: 'var(--text-muted)'
-                                    }}>
-                                        {user.email}
-                                    </div>
-                                )}
                             </div>
 
                             <nav>
@@ -67,23 +61,36 @@ function AppContent() {
                                     </li>
                                 </ul>
                             </nav>
-
-                            <div style={{
-                                marginTop: 'auto',
-                                paddingTop: 'var(--spacing-xl)',
-                                borderTop: '1px solid var(--border-color)'
-                            }}>
-                                <button
-                                    onClick={handleLogout}
-                                    className="btn btn-secondary"
-                                    style={{ width: '100%' }}
-                                >
-                                    Logout
-                                </button>
-                            </div>
                         </aside>
 
                         <main className="main-content">
+                            <header className="top-header">
+                                <div className="page-header-title">
+                                    {/* Placeholder if we want breadcrumbs or title here later */}
+                                </div>
+
+                                {user && (
+                                    <div className="user-profile-container" onClick={() => setShowDropdown(!showDropdown)}>
+
+                                        <div className="user-avatar">
+                                            {user.email?.charAt(0).toUpperCase() || 'A'}
+                                        </div>
+
+                                        {showDropdown && (
+                                            <div className="dropdown-menu">
+                                                <div className="dropdown-header">
+                                                    <div className="dropdown-user-name">{user.email?.split('@')[0] || 'Admin'}</div>
+                                                    <div className="dropdown-user-email">{user.email}</div>
+                                                </div>
+                                                <button onClick={handleLogout} className="dropdown-item text-danger">
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </header>
+
                             <Routes>
                                 <Route path="/" element={<Dashboard />} />
                                 <Route path="/cutting" element={<ClothCutting />} />

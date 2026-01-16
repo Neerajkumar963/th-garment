@@ -15,6 +15,7 @@ export default function ClothCutting() {
     const [clothTypes, setClothTypes] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         org_dress_name: '',
         design: '',
@@ -43,9 +44,10 @@ export default function ClothCutting() {
             setQueue(queueRes.data);
             setClothTypes(clothTypesRes.data);
             setHistory(historyRes.data);
+            setError(null);
         } catch (err) {
             console.error('Error fetching cutting data:', err);
-            alert('Failed to load cutting data');
+            setError('Failed to load cutting data. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -199,6 +201,16 @@ export default function ClothCutting() {
 
     if (loading) {
         return <div className="loading">Loading...</div>;
+    }
+
+    if (error) { // Add error state variable at top of component: const [error, setError] = useState(null);
+        return (
+            <div className="empty-state text-danger">
+                <h3>Error Loading Data</h3>
+                <p>{error}</p>
+                <button className="btn btn-primary" onClick={fetchData}>Retry</button>
+            </div>
+        );
     }
 
     return (

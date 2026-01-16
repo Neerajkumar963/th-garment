@@ -77,73 +77,108 @@ export default function Dashboard() {
     };
 
     return (
-        <div>
-            <div className="page-header">
-                <h1 className="page-title">Dashboard</h1>
-                <p className="page-subtitle">Overview of your garment production and inventory</p>
+        <div className="dashboard-container">
+            <div className="page-header flex-between mb-xl">
+                <div>
+                    <h1 className="page-title text-gradient">Dashboard</h1>
+                    <p className="page-subtitle">Overview of your garment production and inventory</p>
+                </div>
+                <div className="date-display text-muted font-medium">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
             </div>
 
             {/* Stock Summary Cards */}
+            <div className="section-title mb-md text-secondary font-semibold uppercase tracking-wider text-xs">Inventory Overview</div>
             <div className="stats-grid mb-xl">
-                <div className="stat-card">
-                    <div className="stat-label">Cloth Stock</div>
-                    <div className="stat-value">{summary?.stocks?.clothStock || 0}</div>
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>meters</div>
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Cloth Stock</div>
+                        <div className="stat-icon-bg bg-indigo-100 text-indigo-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>🧵</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-indigo-600">{summary?.stocks?.clothStock || 0}</div>
+                    <div className="text-muted text-sm">meters available</div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-label">Cut Stock</div>
-                    <div className="stat-value">{summary?.stocks?.cutStock || 0}</div>
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>items</div>
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Cut Stock</div>
+                        <div className="stat-icon-bg bg-pink-100 text-pink-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>✂️</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-pink-500">{summary?.stocks?.cutStock || 0}</div>
+                    <div className="text-muted text-sm">items ready</div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-label">Selling Stock</div>
-                    <div className="stat-value">{summary?.stocks?.sellingStock || 0}</div>
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>items</div>
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Selling Stock</div>
+                        <div className="stat-icon-bg bg-purple-100 text-purple-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>🛍️</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-purple-600">{summary?.stocks?.sellingStock || 0}</div>
+                    <div className="text-muted text-sm">items for sale</div>
                 </div>
             </div>
 
-            {/* Processing Summary Cards */}
-            <div className="stats-grid mb-xl">
-                <div className="stat-card">
-                    <div className="stat-label">Processing Items</div>
-                    <div className="stat-value">{summary?.processing?.active || 0}</div>
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>in progress</div>
+            {/* Processing & Orders Grid */}
+            <div className="grid-cols-2 gap-lg mb-xl" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>
+                {/* Processing Summary */}
+                <div className="card glass-effect">
+                    <div className="card-header flex-between">
+                        <h3 className="card-title">Processing Status</h3>
+                        <span className="badge badge-info">Live</span>
+                    </div>
+                    <div className="card-body">
+                        <div className="flex justify-between items-center mb-md p-md bg-secondary rounded-lg" style={{ padding: 'var(--spacing-md)', backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
+                            <div>
+                                <div className="text-2xl font-bold text-primary">{summary?.processing?.active || 0}</div>
+                                <div className="text-xs text-muted uppercase tracking-wider">Active Items</div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-2xl font-bold text-success">{summary?.processing?.delivered || 0}</div>
+                                <div className="text-xs text-muted uppercase tracking-wider">Completed</div>
+                            </div>
+                        </div>
+                        <div className="progress-bar-container" style={{ height: '6px', background: 'var(--bg-tertiary)', borderRadius: '10px', overflow: 'hidden' }}>
+                            <div className="progress-bar" style={{ width: '65%', height: '100%', background: 'var(--primary-gradient)' }}></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-label">Delivered Items</div>
-                    <div className="stat-value">{summary?.processing?.delivered || 0}</div>
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>completed</div>
-                </div>
-            </div>
-
-            {/* Orders Summary Cards */}
-            <div className="stats-grid mb-xl">
-                <div className="stat-card">
-                    <div className="stat-label">Pending Orders</div>
-                    <div className="stat-value">{summary?.orders?.pending || 0}</div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-label">In-Process Orders</div>
-                    <div className="stat-value">{summary?.orders?.inProcess || 0}</div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-label">Delivered Orders</div>
-                    <div className="stat-value">{summary?.orders?.delivered || 0}</div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-label">Total Orders</div>
-                    <div className="stat-value">{summary?.orders?.total || 0}</div>
+                {/* Orders Summary */}
+                <div className="card glass-effect">
+                    <div className="card-header flex-between">
+                        <h3 className="card-title">Order Statistics</h3>
+                        <span className="badge badge-warning">Today</span>
+                    </div>
+                    <div className="card-body grid grid-cols-2 gap-md" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                        <div className="p-sm rounded-md text-center bg-warning-bg" style={{ backgroundColor: 'var(--warning-bg)', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-warning">{summary?.orders?.pending || 0}</div>
+                            <div className="text-xs text-muted">Pending</div>
+                        </div>
+                        <div className="p-sm rounded-md text-center bg-info-bg" style={{ backgroundColor: '#e0f2fe', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-info">{summary?.orders?.inProcess || 0}</div>
+                            <div className="text-xs text-muted">Process</div>
+                        </div>
+                        <div className="p-sm rounded-md text-center bg-success-bg" style={{ backgroundColor: 'var(--success-bg)', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-success">{summary?.orders?.delivered || 0}</div>
+                            <div className="text-xs text-muted">Delivered</div>
+                        </div>
+                        <div className="p-sm rounded-md text-center bg-secondary-bg" style={{ backgroundColor: 'var(--bg-tertiary)', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-secondary">{summary?.orders?.total || 0}</div>
+                            <div className="text-xs text-muted">Total</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Recent Activity */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)' }}>
+            <div className="recent-activity-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 'var(--spacing-lg)' }}>
                 <Card title="Recent Processing Activity">
                     {summary?.recentActivity?.processing?.length > 0 ? (
                         <Table

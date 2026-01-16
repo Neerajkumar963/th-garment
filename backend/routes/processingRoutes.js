@@ -2,6 +2,10 @@ import express from 'express';
 import db from '../config/database.js';
 
 const router = express.Router();
+import authMiddleware from '../middleware/authMiddleware.js';
+
+// Apply middleware to all routes
+router.use(authMiddleware);
 
 // Fixed processing stages
 const PROCESSING_STAGES = [
@@ -35,7 +39,7 @@ router.get('/active', async (req, res) => {
       WHERE p.is_completed = FALSE AND p.deleted_at IS NULL
       ORDER BY ps.stage_order, p.last_stage_update DESC
     `);
-    
+
     res.json(activeItems);
   } catch (error) {
     console.error('Get active processing error:', error);
@@ -60,7 +64,7 @@ router.get('/delivered', async (req, res) => {
       ORDER BY p.last_stage_update DESC
       LIMIT 50
     `);
-    
+
     res.json(deliveredItems);
   } catch (error) {
     console.error('Get delivered processing error:', error);
@@ -84,7 +88,7 @@ router.get('/recycle-bin', async (req, res) => {
       WHERE p.deleted_at IS NOT NULL
       ORDER BY p.deleted_at DESC
     `);
-    
+
     res.json(items);
   } catch (error) {
     console.error('Get recycle bin error:', error);
@@ -107,7 +111,7 @@ router.get('/available-cut-stock', async (req, res) => {
       WHERE cs.status = 'available' AND cs.deleted_at IS NULL
       ORDER BY cs.created_at ASC
     `);
-    
+
     res.json(cutStock);
   } catch (error) {
     console.error('Get available cut stock error:', error);
@@ -118,37 +122,37 @@ router.get('/available-cut-stock', async (req, res) => {
 // POST /api/processing/start - Start processing from cut stock
 router.post('/start', async (req, res) => {
   const { cut_stock_id } = req.body;
-  
+
   if (!cut_stock_id) {
     return res.status(400).json({ error: 'cut_stock_id is required' });
   }
-  
+
   const connection = await db.getConnection();
-  
+
   try {
     await connection.beginTransaction();
-    
+
     // Get cut stock details
     const [cutStockData] = await connection.query(
       'SELECT * FROM cut_stock WHERE id = ? AND status = "available"',
       [cut_stock_id]
     );
-    
+
     if (cutStockData.length === 0) {
       throw new Error('Cut stock not found or already in processing');
     }
-    
+
     const cutStock = cutStockData[0];
-    
+
     // Get first stage (Design & Cut)
     const [firstStage] = await connection.query(
       'SELECT * FROM processing_stage WHERE stage_order = 1'
     );
-    
+
     if (firstStage.length === 0) {
       throw new Error('Processing stages not configured');
     }
-    
+
     // Create processing entry
     const [result] = await connection.query(
       `INSERT INTO processing 
@@ -163,16 +167,16 @@ router.post('/start', async (req, res) => {
         firstStage[0].stage_name
       ]
     );
-    
+
     // Update cut stock status
     await connection.query(
       'UPDATE cut_stock SET status = "in_processing" WHERE id = ?',
       [cut_stock_id]
     );
-    
+
     await connection.commit();
-    
-    res.status(201).json({ 
+
+    res.status(201).json({
       message: 'Processing started successfully',
       processing_id: result.insertId,
       current_stage: firstStage[0].stage_name
@@ -189,12 +193,12 @@ router.post('/start', async (req, res) => {
 // PUT /api/processing/advance/:id - Move to next stage
 router.put('/advance/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   const connection = await db.getConnection();
-  
+
   try {
     await connection.beginTransaction();
-    
+
     // Get current processing details
     const [processingData] = await connection.query(
       `SELECT p.*, ps.stage_order 
@@ -203,29 +207,29 @@ router.put('/advance/:id', async (req, res) => {
        WHERE p.id = ? AND p.is_completed = FALSE AND p.deleted_at IS NULL`,
       [id]
     );
-    
+
     if (processingData.length === 0) {
       throw new Error('Processing item not found or already completed');
     }
-    
+
     const processing = processingData[0];
     const currentStageOrder = processing.stage_order;
-    
+
     // Check if already at final stage
     if (currentStageOrder >= 9) {
       throw new Error('Already at final stage. Use complete endpoint instead.');
     }
-    
+
     // Get next stage
     const [nextStage] = await connection.query(
       'SELECT * FROM processing_stage WHERE stage_order = ?',
       [currentStageOrder + 1]
     );
-    
+
     if (nextStage.length === 0) {
       throw new Error('Next stage not found');
     }
-    
+
     // Update processing to next stage
     await connection.query(
       `UPDATE processing 
@@ -233,10 +237,10 @@ router.put('/advance/:id', async (req, res) => {
        WHERE id = ?`,
       [nextStage[0].id, nextStage[0].stage_name, id]
     );
-    
+
     await connection.commit();
-    
-    res.json({ 
+
+    res.json({
       message: 'Advanced to next stage successfully',
       new_stage: nextStage[0].stage_name,
       stage_order: nextStage[0].stage_order
@@ -253,12 +257,12 @@ router.put('/advance/:id', async (req, res) => {
 // PUT /api/processing/complete/:id - Mark processing as completed
 router.put('/complete/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   const connection = await db.getConnection();
-  
+
   try {
     await connection.beginTransaction();
-    
+
     // Get processing details
     const [processingData] = await connection.query(
       `SELECT p.*, ps.stage_order, cs.design
@@ -268,30 +272,30 @@ router.put('/complete/:id', async (req, res) => {
        WHERE p.id = ? AND p.is_completed = FALSE AND p.deleted_at IS NULL`,
       [id]
     );
-    
+
     if (processingData.length === 0) {
       throw new Error('Processing item not found or already completed');
     }
-    
+
     const processing = processingData[0];
-    
+
     // Must be at final stage (Processed - stage 9)
     if (processing.stage_order !== 9) {
       throw new Error('Item must be at "Processed" stage before completing');
     }
-    
+
     // Mark processing as completed
     await connection.query(
       'UPDATE processing SET is_completed = TRUE, last_stage_update = NOW() WHERE id = ?',
       [id]
     );
-    
+
     // Update cut stock status
     await connection.query(
       'UPDATE cut_stock SET status = "processed" WHERE id = ?',
       [processing.cut_stock_id]
     );
-    
+
     // Create selling stock entry
     await connection.query(
       `INSERT INTO selling_stock 
@@ -299,10 +303,10 @@ router.put('/complete/:id', async (req, res) => {
        VALUES (?, ?, ?, ?, ?, 'available')`,
       [id, processing.org_dress_name, processing.design, processing.size, processing.quantity]
     );
-    
+
     await connection.commit();
-    
-    res.json({ 
+
+    res.json({
       message: 'Processing completed successfully. Item moved to selling stock.',
       processing_id: id
     });
@@ -318,17 +322,17 @@ router.put('/complete/:id', async (req, res) => {
 // DELETE /api/processing/:id - Soft Delete
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const [result] = await db.query(
       'UPDATE processing SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL',
       [id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Item not found' });
     }
-    
+
     res.json({ message: 'Item moved to recycle bin' });
   } catch (error) {
     console.error('Delete processing error:', error);
@@ -339,17 +343,17 @@ router.delete('/:id', async (req, res) => {
 // PUT /api/processing/restore/:id - Restore deleted item
 router.put('/restore/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const [result] = await db.query(
       'UPDATE processing SET deleted_at = NULL WHERE id = ?',
       [id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Item not found in recycle bin' });
     }
-    
+
     res.json({ message: 'Item restored successfully' });
   } catch (error) {
     console.error('Restore processing error:', error);
@@ -360,17 +364,17 @@ router.put('/restore/:id', async (req, res) => {
 // DELETE /api/processing/permanent/:id - Permanent Delete
 router.delete('/permanent/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const [result] = await db.query(
       'DELETE FROM processing WHERE id = ?',
       [id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Item not found' });
     }
-    
+
     res.json({ message: 'Item permanently deleted' });
   } catch (error) {
     console.error('Permanent delete processing error:', error);
