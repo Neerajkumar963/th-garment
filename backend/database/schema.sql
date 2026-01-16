@@ -19,6 +19,7 @@ CREATE TABLE cloth_stock (
     quantity DECIMAL(10,2) NOT NULL DEFAULT 0,
     unit VARCHAR(20) DEFAULT 'meters',
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (cloth_type_id) REFERENCES cloth_type(id)
 );
 
@@ -34,6 +35,7 @@ CREATE TABLE cloth_cutting (
     status ENUM('queued', 'completed') DEFAULT 'queued',
     queued_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_date TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (cloth_type_id) REFERENCES cloth_type(id),
     INDEX idx_status (status)
 );
@@ -48,6 +50,7 @@ CREATE TABLE cut_stock (
     quantity INT NOT NULL,
     status ENUM('available', 'in_processing', 'processed') DEFAULT 'available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (cutting_id) REFERENCES cloth_cutting(id),
     INDEX idx_status (status)
 );
@@ -84,6 +87,7 @@ CREATE TABLE processing (
     date_given TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_stage_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_completed BOOLEAN DEFAULT FALSE,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (cut_stock_id) REFERENCES cut_stock(id),
     FOREIGN KEY (current_stage_id) REFERENCES processing_stage(id),
     INDEX idx_stage (current_stage_id),
@@ -100,6 +104,7 @@ CREATE TABLE selling_stock (
     quantity INT NOT NULL,
     status ENUM('available', 'reserved', 'sold') DEFAULT 'available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (processing_id) REFERENCES processing(id),
     INDEX idx_status (status)
 );
@@ -111,7 +116,8 @@ CREATE TABLE dead_stock (
     size VARCHAR(50),
     quantity INT NOT NULL,
     reason TEXT,
-    moved_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    moved_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
 -- 9. Orders Table
@@ -125,6 +131,7 @@ CREATE TABLE orders (
     remarks TEXT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     delivery_date TIMESTAMP NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     INDEX idx_status (status)
 );
 
@@ -137,6 +144,7 @@ CREATE TABLE order_details (
     size VARCHAR(50) NOT NULL,
     quantity INT NOT NULL,
     selling_stock_id INT NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (selling_stock_id) REFERENCES selling_stock(id)
 );

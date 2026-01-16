@@ -141,6 +141,12 @@ router.post('/queue', async (req, res) => {
       throw new Error(`Insufficient cloth stock. Available: ${stockCheck[0].quantity} meters`);
     }
     
+    // Deduct cloth from stock immediately when adding to queue
+    await connection.query(
+      'UPDATE cloth_stock SET quantity = quantity - ? WHERE cloth_type_id = ?',
+      [cloth_used, cloth_type_id]
+    );
+    
     // Insert into cutting queue
     const [result] = await connection.query(
       `INSERT INTO cloth_cutting 
@@ -185,23 +191,13 @@ router.put('/complete/:id', async (req, res) => {
     
     const cutting = cuttingData[0];
     
-    // 1. Update cloth stock (reduce)
-    const [updateStock] = await connection.query(
-      'UPDATE cloth_stock SET quantity = quantity - ? WHERE cloth_type_id = ?',
-      [cutting.cloth_used, cutting.cloth_type_id]
-    );
-    
-    if (updateStock.affectedRows === 0) {
-      throw new Error('Failed to update cloth stock');
-    }
-    
-    // 2. Mark cutting as completed
+    // 1. Mark cutting as completed
     await connection.query(
       'UPDATE cloth_cutting SET status = "completed", completed_date = NOW() WHERE id = ?',
       [id]
     );
     
-    // 3. Create entry in cut_stock
+    // 2. Create entry in cut_stock
     await connection.query(
       `INSERT INTO cut_stock 
        (cutting_id, org_dress_name, design, size, quantity, status) 
@@ -212,7 +208,7 @@ router.put('/complete/:id', async (req, res) => {
     await connection.commit();
     
     res.json({ 
-      message: 'Cutting completed successfully. Cloth stock updated and cut stock created.',
+      message: 'Cutting completed successfully. Cut stock created.',
       cutting_id: id
     });
   } catch (error) {
@@ -228,20 +224,44 @@ router.put('/complete/:id', async (req, res) => {
 router.delete('/queue/:id', async (req, res) => {
   const { id } = req.params;
   
+  const connection = await db.getConnection();
+  
   try {
-    const [result] = await db.query(
-      'UPDATE cloth_cutting SET deleted_at = NOW() WHERE id = ? AND status = "queued"',
+    await connection.beginTransaction();
+    
+    // Get cutting details before deleting
+    const [cuttingData] = await connection.query(
+      'SELECT * FROM cloth_cutting WHERE id = ? AND status = "queued" AND deleted_at IS NULL',
       [id]
     );
     
-    if (result.affectedRows === 0) {
+    if (cuttingData.length === 0) {
+      await connection.rollback();
       return res.status(404).json({ error: 'Queue item not found or already completed' });
     }
     
+    const cutting = cuttingData[0];
+    
+    // Return cloth to stock since item is being deleted
+    await connection.query(
+      'UPDATE cloth_stock SET quantity = quantity + ? WHERE cloth_type_id = ?',
+      [cutting.cloth_used, cutting.cloth_type_id]
+    );
+    
+    // Soft delete the item
+    await connection.query(
+      'UPDATE cloth_cutting SET deleted_at = NOW() WHERE id = ?',
+      [id]
+    );
+    
+    await connection.commit();
     res.json({ message: 'Item moved to recycle bin' });
   } catch (error) {
+    await connection.rollback();
     console.error('Delete queue item error:', error);
     res.status(500).json({ error: 'Failed to delete queue item', message: error.message });
+  } finally {
+    connection.release();
   }
 });
 
@@ -249,20 +269,57 @@ router.delete('/queue/:id', async (req, res) => {
 router.put('/restore/:id', async (req, res) => {
   const { id } = req.params;
   
+  const connection = await db.getConnection();
+  
   try {
-    const [result] = await db.query(
+    await connection.beginTransaction();
+    
+    // Get cutting details
+    const [cuttingData] = await connection.query(
+      'SELECT * FROM cloth_cutting WHERE id = ? AND deleted_at IS NOT NULL',
+      [id]
+    );
+    
+    if (cuttingData.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Item not found in recycle bin' });
+    }
+    
+    const cutting = cuttingData[0];
+    
+    // Check if enough cloth stock is available for restoration
+    const [stockCheck] = await connection.query(
+      'SELECT quantity FROM cloth_stock WHERE cloth_type_id = ?',
+      [cutting.cloth_type_id]
+    );
+    
+    if (stockCheck.length === 0 || stockCheck[0].quantity < cutting.cloth_used) {
+      await connection.rollback();
+      return res.status(400).json({ 
+        error: `Insufficient cloth stock to restore. Available: ${stockCheck[0]?.quantity || 0} meters, Required: ${cutting.cloth_used} meters` 
+      });
+    }
+    
+    // Deduct cloth from stock again
+    await connection.query(
+      'UPDATE cloth_stock SET quantity = quantity - ? WHERE cloth_type_id = ?',
+      [cutting.cloth_used, cutting.cloth_type_id]
+    );
+    
+    // Restore the item
+    await connection.query(
       'UPDATE cloth_cutting SET deleted_at = NULL WHERE id = ?',
       [id]
     );
     
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Item not found' });
-    }
-    
+    await connection.commit();
     res.json({ message: 'Item restored successfully' });
   } catch (error) {
+    await connection.rollback();
     console.error('Restore item error:', error);
     res.status(500).json({ error: 'Failed to restore item', message: error.message });
+  } finally {
+    connection.release();
   }
 });
 
@@ -271,6 +328,8 @@ router.delete('/permanent/:id', async (req, res) => {
   const { id } = req.params;
   
   try {
+    // Note: Permanent delete does NOT return cloth to stock
+    // Cloth was already returned when item was soft deleted
     const [result] = await db.query(
       'DELETE FROM cloth_cutting WHERE id = ?',
       [id]
