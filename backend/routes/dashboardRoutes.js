@@ -8,25 +8,25 @@ router.get('/summary', async (req, res) => {
   try {
     // Get total stocks
     const [clothStockResult] = await db.query(
-      'SELECT SUM(quantity) as total FROM cloth_stock'
+      'SELECT SUM(quantity) as total FROM cloth_stock WHERE deleted_at IS NULL'
     );
     
     const [cutStockResult] = await db.query(
-      'SELECT COUNT(*) as total FROM cut_stock'
+      'SELECT COUNT(*) as total FROM cut_stock WHERE deleted_at IS NULL'
     );
     
     const [sellingStockResult] = await db.query(
-      'SELECT COUNT(*) as total FROM selling_stock WHERE status = "available"'
+      'SELECT COUNT(*) as total FROM selling_stock WHERE status = "available" AND deleted_at IS NULL'
     );
     
     // Get processing items count
     const [processingResult] = await db.query(
-      'SELECT COUNT(*) as total FROM processing WHERE is_completed = FALSE'
+      'SELECT COUNT(*) as total FROM processing WHERE is_completed = FALSE AND deleted_at IS NULL'
     );
     
     // Get delivered items count
     const [deliveredResult] = await db.query(
-      'SELECT COUNT(*) as total FROM processing WHERE is_completed = TRUE'
+      'SELECT COUNT(*) as total FROM processing WHERE is_completed = TRUE AND deleted_at IS NULL'
     );
     
     // Get orders by status
@@ -52,7 +52,7 @@ router.get('/summary', async (req, res) => {
         p.current_stage_name,
         p.last_stage_update
       FROM processing p
-      WHERE p.is_completed = FALSE
+      WHERE p.is_completed = FALSE AND p.deleted_at IS NULL
       ORDER BY p.last_stage_update DESC
       LIMIT 5
     `);
