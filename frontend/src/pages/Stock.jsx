@@ -6,6 +6,8 @@ import Button from '../components/Button';
 import FormInput from '../components/FormInput';
 import FormSelect from '../components/FormSelect';
 import { stockAPI } from '../services/api';
+import { useToast } from '../context/ToastContext';
+import { useModal } from '../context/ModalContext';
 
 export default function Stock() {
     const [activeTab, setActiveTab] = useState('cloth');
@@ -14,6 +16,9 @@ export default function Stock() {
     const [sellingStock, setSellingStock] = useState([]);
     const [deadStock, setDeadStock] = useState([]);
     const [clothTypes, setClothTypes] = useState([]);
+
+    const { showToast } = useToast();
+    const { showConfirm } = useModal();
 
     // Recycle Bin State
     const [showRecycleBin, setShowRecycleBin] = useState(false);
@@ -58,7 +63,7 @@ export default function Stock() {
             setClothTypes(typesRes.data);
         } catch (err) {
             console.error('Error fetching stock data:', err);
-            alert('Failed to load stock data');
+            showToast('Failed to load stock data', 'error');
         } finally {
             setLoading(false);
         }
@@ -71,7 +76,7 @@ export default function Stock() {
             setDeletedItems(response.data);
         } catch (err) {
             console.error('Error fetching deleted stock:', err);
-            alert('Failed to load recycle bin');
+            showToast('Failed to load recycle bin', 'error');
         } finally {
             setLoading(false);
         }
@@ -87,10 +92,10 @@ export default function Stock() {
             setShowAddClothModal(false);
             setClothFormData({ cloth_type_id: '', quantity: '' });
             await fetchData();
-            alert('Cloth stock added successfully!');
+            showToast('Cloth stock added successfully!', 'success');
         } catch (err) {
             console.error('Error adding cloth stock:', err);
-            alert(err.response?.data?.message || 'Failed to add cloth stock');
+            showToast(err.response?.data?.message || 'Failed to add cloth stock', 'error');
         }
     };
 
@@ -106,46 +111,48 @@ export default function Stock() {
             setShowAddDeadModal(false);
             setDeadFormData({ item_name: '', size: '', quantity: '', reason: '' });
             await fetchData();
-            alert('Item added to dead stock');
+            showToast('Item added to dead stock', 'success');
         } catch (err) {
             console.error('Error adding dead stock:', err);
-            alert(err.response?.data?.message || 'Failed to add dead stock');
+            showToast(err.response?.data?.message || 'Failed to add dead stock', 'error');
         }
     };
 
-    const handleDelete = async (id, type = activeTab) => {
-        if (!confirm('Move this item to Recycle Bin?')) return;
-        try {
-            await stockAPI.deleteStock(type, id);
-            alert('Item moved to Recycle Bin');
-            fetchData();
-        } catch (err) {
-            console.error('Delete error:', err);
-            alert('Failed to delete item');
-        }
+    const handleDelete = (id, type = activeTab) => {
+        showConfirm('Move this item to Recycle Bin?', async () => {
+            try {
+                await stockAPI.deleteStock(type, id);
+                showToast('Item moved to Recycle Bin', 'success');
+                fetchData();
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('Failed to delete item', 'error');
+            }
+        });
     };
 
     const handleRestore = async (id) => {
         try {
             await stockAPI.restoreStock(activeTab, id);
-            alert('Item restored successfully');
+            showToast('Item restored successfully', 'success');
             fetchDeletedData();
         } catch (err) {
             console.error('Restore error:', err);
-            alert('Failed to restore item');
+            showToast('Failed to restore item', 'error');
         }
     };
 
-    const handlePermanentDelete = async (id) => {
-        if (!confirm('Are you sure? This cannot be undone.')) return;
-        try {
-            await stockAPI.permanentDeleteStock(activeTab, id);
-            alert('Item permanently deleted');
-            fetchDeletedData();
-        } catch (err) {
-            console.error('Permanent delete error:', err);
-            alert('Failed to delete item permanently');
-        }
+    const handlePermanentDelete = (id) => {
+        showConfirm('Are you sure? This cannot be undone.', async () => {
+            try {
+                await stockAPI.permanentDeleteStock(activeTab, id);
+                showToast('Item permanently deleted', 'success');
+                fetchDeletedData();
+            } catch (err) {
+                console.error('Permanent delete error:', err);
+                showToast('Failed to delete item permanently', 'error');
+            }
+        }, 'Delete Permanently');
     };
 
     // Columns for Active View

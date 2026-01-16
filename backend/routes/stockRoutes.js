@@ -125,9 +125,17 @@ router.post('/cloth', async (req, res) => {
   if (quantity <= 0) return res.status(400).json({ error: 'Quantity must be greater than 0' });
   
   try {
-    const [existing] = await db.query('SELECT id FROM cloth_stock WHERE cloth_type_id = ?', [cloth_type_id]);
+    const [existing] = await db.query('SELECT id, deleted_at FROM cloth_stock WHERE cloth_type_id = ?', [cloth_type_id]);
+    
     if (existing.length > 0) {
-      await db.query('UPDATE cloth_stock SET quantity = quantity + ?, deleted_at = NULL WHERE cloth_type_id = ?', [quantity, cloth_type_id]); // Also un-delete if updating
+      const item = existing[0];
+      if (item.deleted_at) {
+        // Item is in recycle bin: Overwrite quantity and restore
+        await db.query('UPDATE cloth_stock SET quantity = ?, deleted_at = NULL WHERE id = ?', [quantity, item.id]);
+      } else {
+        // Item is active: Add to existing quantity
+        await db.query('UPDATE cloth_stock SET quantity = quantity + ? WHERE id = ?', [quantity, item.id]);
+      }
       res.json({ message: 'Cloth stock updated successfully' });
     } else {
       await db.query('INSERT INTO cloth_stock (cloth_type_id, quantity) VALUES (?, ?)', [cloth_type_id, quantity]);

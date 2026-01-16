@@ -99,11 +99,18 @@ function AppContent() {
     );
 }
 
+import { ToastProvider } from './context/ToastContext';
+import { ModalProvider } from './context/ModalContext';
+
 function App() {
     return (
-        <Router>
-            <AppContent />
-        </Router>
+        <ToastProvider>
+            <ModalProvider>
+                <Router>
+                    <AppContent />
+                </Router>
+            </ModalProvider>
+        </ToastProvider>
     );
 }
 
