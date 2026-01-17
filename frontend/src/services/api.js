@@ -91,4 +91,42 @@ export const ordersAPI = {
   permanentDelete: (id) => api.delete(`/orders/permanent/${id}`),
 };
 
+// Fabricators API
+export const fabricatorsAPI = {
+  getAll: (status) => api.get('/fabricators', { params: { status } }),
+  getById: (id) => api.get(`/fabricators/${id}`),
+  create: (data) => api.post('/fabricators', data),
+  update: (id, data) => api.put(`/fabricators/${id}`, data),
+  delete: (id) => api.delete(`/fabricators/${id}`),
+};
+
+// Job Works API
+export const jobWorksAPI = {
+  getAll: (params) => api.get('/job-works', { params }),
+  getPending: () => api.get('/job-works/pending'),
+  getById: (id) => api.get(`/job-works/${id}`),
+  issue: (data) => api.post('/job-works/issue', data),
+  receive: (id, data) => api.post(`/job-works/${id}/receive`, data),
+  markDead: (id, data) => api.put(`/job-works/${id}/mark-dead`, data),
+  delete: (id) => api.delete(`/job-works/${id}`),
+};
+
+// Ready Items API
+export const readyItemsAPI = {
+  getAll: () => api.get('/ready-items'),
+  getById: (id) => api.get(`/ready-items/${id}`),
+  getAllStock: () => api.get('/ready-items/stock/all'),
+  create: (data) => api.post('/ready-items', data),
+  update: (id, data) => api.put(`/ready-items/${id}`, data),
+  addStock: (id, data) => api.post(`/ready-items/${id}/stock`, data),
+  delete: (id) => api.delete(`/ready-items/${id}`),
+};
+
+// Sales API
+export const salesAPI = {
+  getAvailable: () => api.get('/sales/available'),
+  create: (data) => api.post('/sales', data),
+  getHistory: () => api.get('/sales/history'),
+};
+
 export default api;

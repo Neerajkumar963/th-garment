@@ -12,11 +12,26 @@ router.get('/summary', async (req, res) => {
     );
     
     const [cutStockResult] = await db.query(
-      'SELECT COUNT(*) as total FROM cut_stock WHERE deleted_at IS NULL'
+      'SELECT SUM(quantity) as total FROM cut_stock WHERE deleted_at IS NULL'
     );
     
     const [sellingStockResult] = await db.query(
-      'SELECT COUNT(*) as total FROM selling_stock WHERE status = "available" AND deleted_at IS NULL'
+      'SELECT SUM(quantity) as total FROM selling_stock WHERE status = "available" AND deleted_at IS NULL'
+    );
+    
+    // Get finished goods stock (from all sources)
+    const [finishedGoodsResult] = await db.query(
+      'SELECT SUM(quantity) as total FROM finished_goods_stock WHERE status = "available" AND deleted_at IS NULL'
+    );
+    
+    // Get ready item stock
+    const [readyItemsResult] = await db.query(
+      'SELECT SUM(quantity) as total FROM ready_item_stock WHERE status = "available" AND deleted_at IS NULL'
+    );
+    
+    // Get dead stock
+    const [deadStockResult] = await db.query(
+      'SELECT COUNT(*) as total FROM dead_stock WHERE deleted_at IS NULL'
     );
     
     // Get processing items count
@@ -27,6 +42,24 @@ router.get('/summary', async (req, res) => {
     // Get delivered items count
     const [deliveredResult] = await db.query(
       'SELECT COUNT(*) as total FROM processing WHERE is_completed = TRUE AND deleted_at IS NULL'
+    );
+    
+    // Get job work statistics
+    const [activeJobWorks] = await db.query(
+      'SELECT COUNT(*) as total FROM job_works WHERE status IN ("issued", "partially_received") AND deleted_at IS NULL'
+    );
+    
+    const [pendingJobWorkQty] = await db.query(
+      'SELECT SUM(total_pending_qty) as total FROM job_works WHERE deleted_at IS NULL'
+    );
+    
+    const [completedJobWorks] = await db.query(
+      'SELECT COUNT(*) as total FROM job_works WHERE status = "completed" AND deleted_at IS NULL'
+    );
+    
+    // Get job work pending quantity (items with fabricators)
+    const [fabricatorWorkQty] = await db.query(
+      'SELECT SUM(total_pending_qty) as total FROM job_works WHERE status IN ("issued", "partially_received") AND deleted_at IS NULL'
     );
     
     // Get orders by status
@@ -70,15 +103,42 @@ router.get('/summary', async (req, res) => {
       LIMIT 5
     `);
     
+    // Get recent job works
+    const [recentJobWorks] = await db.query(`
+      SELECT 
+        jw.id,
+        jw.job_number,
+        jw.org_dress_name,
+        jw.status,
+        jw.total_pending_qty,
+        f.name as fabricator_name
+      FROM job_works jw
+      JOIN fabricators f ON jw.fabricator_id = f.id
+      WHERE jw.deleted_at IS NULL
+      ORDER BY jw.issue_date DESC
+      LIMIT 5
+    `);
+    
     res.json({
       stocks: {
+        rawCloth: clothStockResult[0].total || 0,
         clothStock: clothStockResult[0].total || 0,
         cutStock: cutStockResult[0].total || 0,
-        sellingStock: sellingStockResult[0].total || 0
+        sellingStock: sellingStockResult[0].total || 0,
+        finishedGoods: (Number(finishedGoodsResult[0].total) || 0) + (Number(sellingStockResult[0].total) || 0),
+        readyItems: readyItemsResult[0].total || 0,
+        deadStock: deadStockResult[0].total || 0
       },
       processing: {
+        selfProcessing: processingResult[0].total || 0,
+        fabricatorWork: fabricatorWorkQty[0].total || 0,
         active: processingResult[0].total || 0,
         delivered: deliveredResult[0].total || 0
+      },
+      jobWorks: {
+        active: activeJobWorks[0].total || 0,
+        pending_qty: pendingJobWorkQty[0].total || 0,
+        completed: completedJobWorks[0].total || 0
       },
       orders: {
         pending: pendingOrders[0].total || 0,
@@ -88,7 +148,8 @@ router.get('/summary', async (req, res) => {
       },
       recentActivity: {
         processing: recentProcessing,
-        orders: recentOrders
+        orders: recentOrders,
+        jobWorks: recentJobWorks
       }
     });
   } catch (error) {

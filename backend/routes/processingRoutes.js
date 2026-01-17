@@ -364,21 +364,43 @@ router.put('/restore/:id', async (req, res) => {
 // DELETE /api/processing/permanent/:id - Permanent Delete
 router.delete('/permanent/:id', async (req, res) => {
   const { id } = req.params;
+  const connection = await db.getConnection();
 
   try {
-    const [result] = await db.query(
+    await connection.beginTransaction();
+
+    // Get processing item to release cut stock
+    const [item] = await connection.query(
+      'SELECT cut_stock_id FROM processing WHERE id = ?',
+      [id]
+    );
+
+    if (item.length > 0) {
+      // Release cut stock back to available
+      await connection.query(
+        'UPDATE cut_stock SET status = "available" WHERE id = ?',
+        [item[0].cut_stock_id]
+      );
+    }
+
+    const [result] = await connection.query(
       'DELETE FROM processing WHERE id = ?',
       [id]
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).json({ error: 'Item not found' });
     }
 
-    res.json({ message: 'Item permanently deleted' });
+    await connection.commit();
+    res.json({ message: 'Item permanently deleted and stock released' });
   } catch (error) {
+    await connection.rollback();
     console.error('Permanent delete processing error:', error);
     res.status(500).json({ error: 'Failed to permanently delete item', message: error.message });
+  } finally {
+    connection.release();
   }
 });
 

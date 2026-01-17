@@ -7,6 +7,14 @@ import ClothCutting from './pages/ClothCutting';
 import Processing from './pages/Processing';
 import Stock from './pages/Stock';
 import Orders from './pages/Orders';
+import Fabricators from './pages/Fabricators';
+import JobWorks from './pages/JobWorks';
+import JobWorkIssue from './pages/JobWorkIssue';
+import JobWorkReceive from './pages/JobWorkReceive';
+import ReadyItems from './pages/ReadyItems';
+import DirectSales from './pages/DirectSales.jsx';
+import DeadStock from './pages/DeadStock';
+import ClothProcessing from './pages/ClothProcessing';
 
 function AppContent() {
     const navigate = useNavigate();
@@ -45,6 +53,11 @@ function AppContent() {
                                         </NavLink>
                                     </li>
                                     <li className="nav-item">
+                                        <NavLink to="/cloth-processing" className="nav-link">
+                                            Cloth Processing
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
                                         <NavLink to="/processing" className="nav-link">
                                             Processing
                                         </NavLink>
@@ -57,6 +70,31 @@ function AppContent() {
                                     <li className="nav-item">
                                         <NavLink to="/orders" className="nav-link">
                                             Orders
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/fabricators" className="nav-link">
+                                            Fabricators
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/job-works" className="nav-link">
+                                            Job Works
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/ready-items" className="nav-link">
+                                            Ready Items
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/direct-sales" className="nav-link">
+                                            Direct Sales
+                                        </NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink to="/dead-stock" className="nav-link">
+                                            Dead Stock
                                         </NavLink>
                                     </li>
                                 </ul>
@@ -93,10 +131,18 @@ function AppContent() {
 
                             <Routes>
                                 <Route path="/" element={<Dashboard />} />
+                                <Route path="/cloth-processing" element={<ClothProcessing />} />
                                 <Route path="/cutting" element={<ClothCutting />} />
                                 <Route path="/processing" element={<Processing />} />
                                 <Route path="/stock" element={<Stock />} />
                                 <Route path="/orders" element={<Orders />} />
+                                <Route path="/fabricators" element={<Fabricators />} />
+                                <Route path="/job-works" element={<JobWorks />} />
+                                <Route path="/job-works/issue" element={<JobWorkIssue />} />
+                                <Route path="/job-works/receive" element={<JobWorkReceive />} />
+                                <Route path="/ready-items" element={<ReadyItems />} />
+                                <Route path="/direct-sales" element={<DirectSales />} />
+                                <Route path="/dead-stock" element={<DeadStock />} />
                             </Routes>
                         </main>
                     </div>
