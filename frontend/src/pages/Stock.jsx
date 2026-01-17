@@ -56,11 +56,11 @@ export default function Stock() {
                 stockAPI.getDeadStock(),
                 stockAPI.getClothTypes(),
             ]);
-            setClothStock(clothRes.data);
+            setClothStock(clothRes.data.data);
             setCutStock(cutRes.data);
             setSellingStock(sellingRes.data);
-            setDeadStock(deadRes.data);
-            setClothTypes(typesRes.data);
+            setDeadStock(deadRes.data.data || deadRes.data); // Handle both response formats
+            setClothTypes(typesRes.data.data);
         } catch (err) {
             console.error('Error fetching stock data:', err);
             showToast('Failed to load stock data', 'error');
@@ -180,7 +180,15 @@ export default function Stock() {
                     { header: 'Design', key: 'design' },
                     { header: 'Size', key: 'size' },
                     { header: 'Quantity', key: 'quantity' },
-                    { header: 'Status', key: 'status' },
+                    {
+                        header: 'Status',
+                        key: 'status',
+                        render: (value) => (
+                            <span className={`badge badge-${value === 'processed' ? 'success' : value === 'in_processing' ? 'warning' : 'secondary'}`}>
+                                {value === 'in_processing' ? 'In Processing' : value.charAt(0).toUpperCase() + value.slice(1)}
+                            </span>
+                        )
+                    },
                     { header: showRecycleBin ? 'Deleted At' : 'Created', key: showRecycleBin ? 'deleted_at' : 'created_at', render: (v) => new Date(v).toLocaleDateString() },
                     !showRecycleBin && commonActions
                 ].filter(Boolean);

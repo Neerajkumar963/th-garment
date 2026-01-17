@@ -123,10 +123,43 @@ export default function Dashboard() {
                     <div className="stat-value text-purple-600">{summary?.stocks?.sellingStock || 0}</div>
                     <div className="text-muted text-sm">items for sale</div>
                 </div>
+
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Finished Goods</div>
+                        <div className="stat-icon-bg bg-green-100 text-green-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>✅</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-green-600">{summary?.stocks?.finishedGoods || 0}</div>
+                    <div className="text-muted text-sm">completed items</div>
+                </div>
+
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Ready Items</div>
+                        <div className="stat-icon-bg bg-blue-100 text-blue-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>📦</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-blue-600">{summary?.stocks?.readyItems || 0}</div>
+                    <div className="text-muted text-sm">ready-made</div>
+                </div>
+
+                <div className="stat-card glass-effect">
+                    <div className="flex-between mb-sm">
+                        <div className="stat-label">Dead Stock</div>
+                        <div className="stat-icon-bg bg-red-100 text-red-600 p-2 rounded-lg">
+                            <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                        </div>
+                    </div>
+                    <div className="stat-value text-red-600">{summary?.stocks?.deadStock || 0}</div>
+                    <div className="text-muted text-sm">lost/damaged</div>
+                </div>
             </div>
 
-            {/* Processing & Orders Grid */}
-            <div className="grid-cols-2 gap-lg mb-xl" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-lg)' }}>
+            {/* Processing, Job Works & Orders Grid */}
+            <div className="grid-cols-3 gap-lg mb-xl" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-lg)' }}>
                 {/* Processing Summary */}
                 <div className="card glass-effect">
                     <div className="card-header flex-between">
@@ -136,16 +169,38 @@ export default function Dashboard() {
                     <div className="card-body">
                         <div className="flex justify-between items-center mb-md p-md bg-secondary rounded-lg" style={{ padding: 'var(--spacing-md)', backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
                             <div>
-                                <div className="text-2xl font-bold text-primary">{summary?.processing?.active || 0}</div>
-                                <div className="text-xs text-muted uppercase tracking-wider">Active Items</div>
+                                <div className="text-2xl font-bold text-primary">{summary?.processing?.selfProcessing || 0}</div>
+                                <div className="text-xs text-muted uppercase tracking-wider">Self Processing</div>
                             </div>
                             <div className="text-right">
-                                <div className="text-2xl font-bold text-success">{summary?.processing?.delivered || 0}</div>
-                                <div className="text-xs text-muted uppercase tracking-wider">Completed</div>
+                                <div className="text-2xl font-bold text-warning">{summary?.processing?.fabricatorWork || 0}</div>
+                                <div className="text-xs text-muted uppercase tracking-wider">With Fabricators</div>
                             </div>
                         </div>
                         <div className="progress-bar-container" style={{ height: '6px', background: 'var(--bg-tertiary)', borderRadius: '10px', overflow: 'hidden' }}>
                             <div className="progress-bar" style={{ width: '65%', height: '100%', background: 'var(--primary-gradient)' }}></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Job Works Summary */}
+                <div className="card glass-effect">
+                    <div className="card-header flex-between">
+                        <h3 className="card-title">Job Works</h3>
+                        <span className="badge badge-warning">Active</span>
+                    </div>
+                    <div className="card-body grid grid-cols-3 gap-md" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--spacing-md)' }}>
+                        <div className="p-sm rounded-md text-center bg-warning-bg" style={{ backgroundColor: 'var(--warning-bg)', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-warning">{summary?.jobWorks?.active || 0}</div>
+                            <div className="text-xs text-muted">Active</div>
+                        </div>
+                        <div className="p-sm rounded-md text-center bg-info-bg" style={{ backgroundColor: '#e0f2fe', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-info">{summary?.jobWorks?.pending_qty || 0}</div>
+                            <div className="text-xs text-muted">Pending</div>
+                        </div>
+                        <div className="p-sm rounded-md text-center bg-success-bg" style={{ backgroundColor: 'var(--success-bg)', padding: 'var(--spacing-sm)', borderRadius: 'var(--radius-md)' }}>
+                            <div className="font-bold text-lg text-success">{summary?.jobWorks?.completed || 0}</div>
+                            <div className="text-xs text-muted">Done</div>
                         </div>
                     </div>
                 </div>

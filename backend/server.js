@@ -10,6 +10,9 @@ import processingRoutes from './routes/processingRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import ordersRoutes from './routes/ordersRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import fabricatorRoutes from './routes/fabricatorRoutes.js';
+import jobWorkRoutes from './routes/jobWorkRoutes.js';
+import readyItemRoutes from './routes/readyItemRoutes.js';
 
 dotenv.config();
 
@@ -32,11 +35,17 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+import salesRoutes from './routes/salesRoutes.js';
+
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/cutting', cuttingRoutes);
 app.use('/api/processing', processingRoutes);
 app.use('/api/stock', stockRoutes);
 app.use('/api/orders', ordersRoutes);
+app.use('/api/fabricators', fabricatorRoutes);
+app.use('/api/job-works', jobWorkRoutes);
+app.use('/api/ready-items', readyItemRoutes);
+app.use('/api/sales', salesRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

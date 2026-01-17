@@ -41,7 +41,7 @@ router.get('/cloth', async (req, res) => {
       WHERE cs.deleted_at IS NULL
       ORDER BY ct.name
     `);
-    res.json(clothStock);
+    res.json({ data: clothStock });
   } catch (error) {
     console.error('Get cloth stock error:', error);
     res.status(500).json({ error: 'Failed to fetch cloth stock', message: error.message });
@@ -61,7 +61,7 @@ router.get('/cut', async (req, res) => {
         cs.status,
         cs.created_at
       FROM cut_stock cs
-      WHERE cs.deleted_at IS NULL
+      WHERE cs.deleted_at IS NULL AND cs.status != 'available'
       ORDER BY cs.created_at DESC
     `);
     res.json(cutStock);
@@ -104,12 +104,14 @@ router.get('/dead', async (req, res) => {
         size,
         quantity,
         reason,
+        source,
+        source_id,
         moved_date
       FROM dead_stock
       WHERE deleted_at IS NULL
       ORDER BY moved_date DESC
     `);
-    res.json(deadStock);
+    res.json({ data: deadStock });
   } catch (error) {
     console.error('Get dead stock error:', error);
     res.status(500).json({ error: 'Failed to fetch dead stock', message: error.message });
@@ -166,7 +168,7 @@ router.post('/dead', async (req, res) => {
 router.get('/cloth-types', async (req, res) => {
   try {
     const [clothTypes] = await db.query('SELECT id, name, description FROM cloth_type ORDER BY name');
-    res.json(clothTypes);
+    res.json({ data: clothTypes });
   } catch (error) {
     console.error('Get cloth types error:', error);
     res.status(500).json({ error: 'Failed to fetch cloth types', message: error.message });
