@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import FormInput from '../components/FormInput';
+import ThemeToggle from '../components/ThemeToggle';
 import axios from 'axios';
 
 export default function Login() {
@@ -47,8 +48,13 @@ export default function Login() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'var(--bg-secondary)'
+            backgroundColor: 'var(--bg-secondary)',
+            position: 'relative'
         }}>
+            <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
+                <ThemeToggle />
+            </div>
+
             <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
                 <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
                     <h1 className="page-title" style={{ color: 'var(--primary-color)', marginBottom: 'var(--spacing-sm)' }}>

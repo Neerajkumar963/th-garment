@@ -107,26 +107,30 @@ function AppContent() {
                                     {/* Placeholder if we want breadcrumbs or title here later */}
                                 </div>
 
-                                {user && (
-                                    <div className="user-profile-container" onClick={() => setShowDropdown(!showDropdown)}>
+                                <div className="flex items-center">
+                                    <ThemeToggle />
 
-                                        <div className="user-avatar">
-                                            {user.email?.charAt(0).toUpperCase() || 'A'}
-                                        </div>
+                                    {user && (
+                                        <div className="user-profile-container" onClick={() => setShowDropdown(!showDropdown)}>
 
-                                        {showDropdown && (
-                                            <div className="dropdown-menu">
-                                                <div className="dropdown-header">
-                                                    <div className="dropdown-user-name">{user.email?.split('@')[0] || 'Admin'}</div>
-                                                    <div className="dropdown-user-email">{user.email}</div>
-                                                </div>
-                                                <button onClick={handleLogout} className="dropdown-item text-danger">
-                                                    Logout
-                                                </button>
+                                            <div className="user-avatar">
+                                                {user.email?.charAt(0).toUpperCase() || 'A'}
                                             </div>
-                                        )}
-                                    </div>
-                                )}
+
+                                            {showDropdown && (
+                                                <div className="dropdown-menu">
+                                                    <div className="dropdown-header">
+                                                        <div className="dropdown-user-name">{user.email?.split('@')[0] || 'Admin'}</div>
+                                                        <div className="dropdown-user-email">{user.email}</div>
+                                                    </div>
+                                                    <button onClick={handleLogout} className="dropdown-item text-danger">
+                                                        Logout
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </header>
 
                             <Routes>
@@ -154,14 +158,18 @@ function AppContent() {
 
 import { ToastProvider } from './context/ToastContext';
 import { ModalProvider } from './context/ModalContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
     return (
         <ToastProvider>
             <ModalProvider>
-                <Router>
-                    <AppContent />
-                </Router>
+                <ThemeProvider>
+                    <Router>
+                        <AppContent />
+                    </Router>
+                </ThemeProvider>
             </ModalProvider>
         </ToastProvider>
     );

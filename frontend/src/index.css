@@ -64,6 +64,53 @@
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme="dark"] {
+  /* Color Palette - Dark Mode */
+  --primary-color: #818cf8;
+  /* Light Indigo for dark mode */
+  --primary-hover: #a5b4fc;
+  --primary-light: #312e81;
+  /* Dark indigo bg */
+
+  --secondary-color: #94a3b8;
+  --secondary-light: #1e293b;
+
+  --success-color: #34d399;
+  --success-bg: #064e3b;
+
+  --warning-color: #fbbf24;
+  --warning-bg: #451a03;
+
+  --danger-color: #f87171;
+  --danger-bg: #450a0a;
+
+  --info-color: #60a5fa;
+
+  /* Backgrounds */
+  --bg-primary: #1e293b;
+  /* Slate 800 */
+  --bg-secondary: #0f172a;
+  /* Slate 900 */
+  --bg-tertiary: #334155;
+  /* Slate 700 */
+  --border-color: #334155;
+
+  /* Text */
+  --text-primary: #f8fafc;
+  /* Slate 50 */
+  --text-secondary: #cbd5e1;
+  /* Slate 300 */
+  --text-muted: #94a3b8;
+  /* Slate 400 */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+
+  --sidebar-gradient: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -764,6 +811,13 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .glass-effect {
+  background: rgba(30, 41, 59, 0.95);
+  /* derived from --bg-primary (slate-800) */
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .text-gradient {
@@ -781,6 +835,12 @@ body {
 .text-indigo-600 {
   color: #4f46e5;
 }
+
+[data-theme="dark"] .text-indigo-600 {
+  color: #818cf8;
+}
+
+/* Lighter for dark mode */
 
 .bg-pink-100 {
   background-color: #fce7f3;
@@ -800,6 +860,49 @@ body {
 
 .text-purple-600 {
   color: #9333ea;
+}
+
+[data-theme="dark"] .text-purple-600 {
+  color: #a855f7;
+}
+
+/* Missing Green/Success Utilities */
+.bg-green-100 {
+  background-color: #dcfce7;
+}
+
+.text-green-600 {
+  color: #16a34a;
+}
+
+[data-theme="dark"] .text-green-600 {
+  color: #4ade80;
+}
+
+/* Missing Blue/Ready Utilities */
+.bg-blue-100 {
+  background-color: #dbeafe;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+[data-theme="dark"] .text-blue-600 {
+  color: #60a5fa;
+}
+
+/* Missing Red/Dead Stock Utilities */
+.bg-red-100 {
+  background-color: #fee2e2;
+}
+
+.text-red-600 {
+  color: #dc2626;
+}
+
+[data-theme="dark"] .text-red-600 {
+  color: #f87171;
 }
 
 .text-warning {
@@ -832,6 +935,18 @@ body {
 
 .bg-info-bg {
   background-color: #dbeafe;
+}
+
+/* Icon Backgrounds in Dark Mode - darken them */
+[data-theme="dark"] .bg-indigo-100,
+[data-theme="dark"] .bg-pink-100,
+[data-theme="dark"] .bg-purple-100,
+[data-theme="dark"] .bg-green-100,
+[data-theme="dark"] .bg-blue-100,
+[data-theme="dark"] .bg-red-100,
+[data-theme="dark"] .bg-info-bg {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Subtle translucent bg for icons */
 }
 
 /* Spacing and Typos */
