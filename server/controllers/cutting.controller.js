@@ -544,7 +544,8 @@ exports.getInternalStock = async (req, res, next) => {
                 FROM processing 
                 WHERE status != 'processed' OR stage_id = 8 OR (status = 'processed' AND stage_id IS NOT NULL)
             )
-            GROUP BY cs.id -- Deduplicate if multiple details exist
+            GROUP BY 
+                cs.id, cp.org_dress_id, cq.cloth_detail_id, ct.type, c.color_name, d.design_name, q.quality_name
         `, [org_dress_id]);
 
         res.status(200).json({
