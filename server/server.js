@@ -15,7 +15,13 @@ const runStartupCheck = require('./utils/startup-check');
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: [
+        'http://localhost:5173', 
+        'http://127.0.0.1:5173',
+        'https://th-garment.vercel.app', // Your future Vercel URL
+        'https://th-garments.vercel.app',
+        process.env.FRONTEND_URL // Allow setting via ENV
+    ].filter(Boolean),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
