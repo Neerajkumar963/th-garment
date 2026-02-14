@@ -42,7 +42,8 @@ INSERT INTO emp_roles (role) VALUES
 ('Manager'),
 ('Cutter'),
 ('Stitcher'),
-('Helper');
+('Helper'),
+('Fabricator');
 
 -- Default Admin User
 -- Password: 'admin123'

@@ -22790,3 +22790,497 @@
 [2026-02-14T12:33:26.859Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
 [2026-02-14T12:33:26.877Z] [INFO] GET /stats - Status: 304
 [2026-02-14T12:33:26.935Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:06:54.012Z] [INFO] Running startup checks...
+[2026-02-14T14:06:54.066Z] [INFO] Database check passed.
+[2026-02-14T14:06:54.067Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:06:55.315Z] [INFO] Running startup checks...
+[2026-02-14T14:06:55.368Z] [INFO] Database check passed.
+[2026-02-14T14:06:55.369Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:16:34.441Z] [INFO] Running startup checks...
+[2026-02-14T14:17:48.510Z] [INFO] Running startup checks...
+[2026-02-14T14:19:08.572Z] [INFO] Running startup checks...
+[2026-02-14T14:20:52.368Z] [INFO] Running startup checks...
+[2026-02-14T14:22:26.442Z] [INFO] Running startup checks...
+[2026-02-14T14:22:53.305Z] [INFO] Running startup checks...
+[2026-02-14T14:23:16.747Z] [INFO] Running startup checks...
+[2026-02-14T14:24:16.499Z] [INFO] Running startup checks...
+[2026-02-14T14:25:11.447Z] [INFO] Running startup checks...
+[2026-02-14T14:25:42.784Z] [INFO] Running startup checks...
+[2026-02-14T14:27:23.885Z] [INFO] Running startup checks...
+[2026-02-14T14:29:56.182Z] [INFO] Running startup checks...
+[2026-02-14T14:29:56.897Z] [INFO] Database check passed.
+[2026-02-14T14:29:56.897Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:30:09.641Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:30:09.658Z] [INFO] GET / - Status: 401
+[2026-02-14T14:30:09.663Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:30:09.672Z] [INFO] GET /all-products - Status: 401
+[2026-02-14T14:30:09.688Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:30:09.696Z] [INFO] GET / - Status: 401
+[2026-02-14T14:30:09.707Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:30:09.711Z] [INFO] GET /cloth-types - Status: 401
+[2026-02-14T14:30:09.713Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:30:09.716Z] [INFO] GET /colors - Status: 401
+[2026-02-14T14:30:09.723Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:30:09.729Z] [INFO] GET /designs - Status: 401
+[2026-02-14T14:30:09.737Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:30:09.740Z] [INFO] GET /qualities - Status: 401
+[2026-02-14T14:30:10.554Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:30:10.559Z] [INFO] GET /stats - Status: 401
+[2026-02-14T14:30:10.564Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:30:10.577Z] [INFO] GET /recent-orders - Status: 401
+[2026-02-14T14:33:00.498Z] [INFO] POST /api/auth/logout - IP: ::1
+[2026-02-14T14:33:00.504Z] [INFO] POST /logout - Status: 200
+[2026-02-14T14:33:20.067Z] [INFO] POST /api/auth/login - IP: ::1
+[2026-02-14T14:33:20.370Z] [INFO] POST /api/auth/login - Status: 500
+[2026-02-14T14:34:03.061Z] [INFO] POST /api/auth/login - IP: ::1
+[2026-02-14T14:34:03.343Z] [INFO] POST /api/auth/login - Status: 500
+[2026-02-14T14:36:24.789Z] [INFO] Running startup checks...
+[2026-02-14T14:36:25.446Z] [INFO] Database check passed.
+[2026-02-14T14:36:25.447Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:36:36.632Z] [INFO] POST /api/auth/login - IP: ::1
+[2026-02-14T14:36:36.950Z] [INFO] POST /login - Status: 200
+[2026-02-14T14:36:37.005Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:36:37.016Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:36:37.444Z] [INFO] GET /stats - Status: 200
+[2026-02-14T14:36:37.470Z] [INFO] GET /recent-orders - Status: 200
+[2026-02-14T14:36:43.955Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:36:43.962Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:36:43.969Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:36:43.976Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:36:43.996Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:36:44.007Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:36:44.041Z] [INFO] GET /cloth-types - Status: 200
+[2026-02-14T14:36:44.049Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:36:44.064Z] [INFO] GET / - Status: 200
+[2026-02-14T14:36:44.130Z] [INFO] GET / - Status: 200
+[2026-02-14T14:36:44.436Z] [INFO] GET /all-products - Status: 200
+[2026-02-14T14:36:44.470Z] [INFO] GET /colors - Status: 200
+[2026-02-14T14:36:44.484Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:36:44.501Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:36:44.915Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:36:44.935Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:36:44.955Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:36:44.942Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:36:45.006Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:45.014Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:45.022Z] [INFO] GET / - Status: 200
+[2026-02-14T14:36:45.033Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:36:45.815Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:36:45.820Z] [INFO] GET /api/processing/board - IP: ::1
+[2026-02-14T14:36:45.878Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:45.892Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:36:45.957Z] [INFO] GET /available-stock - Status: 200
+[2026-02-14T14:36:45.965Z] [INFO] GET /board - Status: 200
+[2026-02-14T14:36:45.975Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:36:46.043Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:46.052Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:36:46.123Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:36:46.830Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:36:46.901Z] [INFO] GET /fabricator - Status: 200
+[2026-02-14T14:36:47.818Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:36:47.901Z] [INFO] GET /api/orders - Status: 500
+[2026-02-14T14:36:50.741Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:36:50.818Z] [INFO] GET / - Status: 200
+[2026-02-14T14:36:52.010Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:36:52.018Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:36:52.029Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:36:52.075Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:52.090Z] [INFO] GET / - Status: 200
+[2026-02-14T14:36:52.104Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:36:53.758Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:36:53.761Z] [INFO] GET /api/employees/roles - IP: ::1
+[2026-02-14T14:36:53.825Z] [INFO] GET /roles - Status: 200
+[2026-02-14T14:36:53.830Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:55.729Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:36:55.800Z] [INFO] GET / - Status: 304
+[2026-02-14T14:36:56.462Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:36:56.539Z] [INFO] GET /api/orders - Status: 500
+[2026-02-14T14:38:35.524Z] [INFO] Running startup checks...
+[2026-02-14T14:38:36.123Z] [INFO] Database check passed.
+[2026-02-14T14:38:36.125Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:39:00.709Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:39:00.798Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:39:01.410Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:39:01.481Z] [INFO] GET /api/orders - Status: 500
+[2026-02-14T14:39:16.287Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:39:16.357Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:39:17.155Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:39:17.219Z] [INFO] GET /api/orders - Status: 500
+[2026-02-14T14:39:27.408Z] [INFO] Running startup checks...
+[2026-02-14T14:39:28.000Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:39:28.000Z] [INFO] Database check passed.
+[2026-02-14T14:39:29.597Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:39:29.680Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:39:30.554Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:39:30.641Z] [INFO] GET /api/orders - Status: 500
+[2026-02-14T14:40:29.227Z] [INFO] Running startup checks...
+[2026-02-14T14:40:29.900Z] [INFO] Database check passed.
+[2026-02-14T14:40:29.900Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:41:17.132Z] [INFO] Running startup checks...
+[2026-02-14T14:41:17.673Z] [INFO] Database check passed.
+[2026-02-14T14:41:17.676Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:41:18.719Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:41:18.826Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:41:25.221Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:41:25.365Z] [INFO] GET / - Status: 200
+[2026-02-14T14:41:30.749Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:41:30.822Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:41:31.664Z] [INFO] GET /api/processing/board - IP: ::1
+[2026-02-14T14:41:31.680Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:31.806Z] [INFO] GET /board - Status: 304
+[2026-02-14T14:41:32.179Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:32.184Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:32.205Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:41:32.255Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:32.286Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:41:32.295Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:41:32.364Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:41:32.648Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:41:32.721Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:41:33.540Z] [INFO] GET /api/processing/board - IP: ::1
+[2026-02-14T14:41:33.544Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:33.606Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:33.619Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:41:33.678Z] [INFO] GET /board - Status: 304
+[2026-02-14T14:41:33.686Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:33.699Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:41:33.759Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:33.767Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:41:33.834Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:41:34.230Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:34.239Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:41:34.249Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:41:34.279Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:41:34.305Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:34.315Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:34.747Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:41:34.763Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:35.154Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:41:35.186Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:41:35.173Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:35.197Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:41:35.213Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:41:35.251Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:41:35.276Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:35.290Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:35.297Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:41:35.307Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:41:35.319Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:41:35.393Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:41:35.701Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:41:35.717Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:41:36.324Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:41:36.327Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:41:36.401Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:41:36.576Z] [INFO] GET /stats - Status: 304
+[2026-02-14T14:41:37.572Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:41:37.644Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:38.282Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:41:38.285Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:41:38.292Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:41:38.347Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:38.354Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:41:38.369Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:38.968Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:38.986Z] [INFO] GET /api/employees/roles - IP: ::1
+[2026-02-14T14:41:39.054Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:39.062Z] [INFO] GET /roles - Status: 304
+[2026-02-14T14:41:39.689Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:41:39.696Z] [INFO] GET /api/attendance?date=2026-02-14 - IP: ::1
+[2026-02-14T14:41:39.761Z] [INFO] GET / - Status: 304
+[2026-02-14T14:41:39.784Z] [INFO] GET /?date=2026-02-14 - Status: 304
+[2026-02-14T14:41:40.614Z] [INFO] GET /api/reports/profit-loss?month=2&year=2026 - IP: ::1
+[2026-02-14T14:41:40.629Z] [INFO] GET /api/reports/outstanding - IP: ::1
+[2026-02-14T14:41:40.762Z] [INFO] GET /profit-loss?month=2&year=2026 - Status: 200
+[2026-02-14T14:41:40.777Z] [INFO] GET /outstanding - Status: 200
+[2026-02-14T14:41:41.341Z] [INFO] GET /api/reports/profit-loss?month=2&year=2026 - IP: ::1
+[2026-02-14T14:41:41.349Z] [INFO] GET /api/reports/outstanding - IP: ::1
+[2026-02-14T14:41:41.363Z] [INFO] GET /api/reports/inventory-value - IP: ::1
+[2026-02-14T14:41:41.369Z] [INFO] GET /api/reports/production-summary?month=2&year=2026 - IP: ::1
+[2026-02-14T14:41:41.456Z] [INFO] GET /production-summary?month=2&year=2026 - Status: 200
+[2026-02-14T14:41:41.483Z] [INFO] GET /profit-loss?month=2&year=2026 - Status: 304
+[2026-02-14T14:41:41.489Z] [INFO] GET /outstanding - Status: 304
+[2026-02-14T14:41:41.504Z] [INFO] GET /inventory-value - Status: 200
+[2026-02-14T14:41:42.547Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:41:42.550Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:41:42.618Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:41:42.798Z] [INFO] GET /stats - Status: 304
+[2026-02-14T14:42:27.051Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:42:27.055Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:42:27.067Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:42:27.073Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:42:27.117Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:27.127Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:42:27.138Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:27.151Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:27.713Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:42:27.729Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:42:27.735Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:42:27.754Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:42:27.768Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:42:27.787Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:27.792Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:42:27.804Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:42:27.818Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:27.825Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:42:27.836Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:42:27.842Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:42:27.861Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:42:27.879Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:42:31.293Z] [INFO] GET /api/sales/stock - IP: ::1
+[2026-02-14T14:42:31.367Z] [INFO] GET /api/sales/stock - Status: 500
+[2026-02-14T14:42:40.549Z] [INFO] GET /api/auth/me - IP: ::1
+[2026-02-14T14:42:40.554Z] [INFO] GET /me - Status: 200
+[2026-02-14T14:42:40.690Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:42:40.693Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:42:40.754Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:42:40.967Z] [INFO] GET /stats - Status: 304
+[2026-02-14T14:42:41.695Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:42:41.699Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:42:41.702Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:42:41.717Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:42:41.724Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:42:41.733Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:42:41.764Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:42:41.766Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:42:41.770Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:41.782Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:42:41.798Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:42:41.824Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:42:41.842Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:42:41.867Z] [INFO] GET / - Status: 304
+[2026-02-14T14:42:43.132Z] [INFO] GET /api/sales/stock - IP: ::1
+[2026-02-14T14:42:43.197Z] [INFO] GET /api/sales/stock - Status: 500
+[2026-02-14T14:44:11.757Z] [INFO] Running startup checks...
+[2026-02-14T14:44:12.369Z] [INFO] Database check passed.
+[2026-02-14T14:44:12.370Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T14:50:28.373Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:50:28.353Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:50:28.390Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:28.402Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:50:28.417Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:50:28.433Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:50:28.466Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:28.476Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:50:28.551Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:50:28.920Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:50:28.936Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:50:28.967Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:29.001Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:50:29.059Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:50:29.239Z] [INFO] GET /api/sales/stock - IP: ::1
+[2026-02-14T14:50:29.324Z] [INFO] GET /stock - Status: 200
+[2026-02-14T14:50:33.577Z] [INFO] GET /api/auth/me - IP: ::1
+[2026-02-14T14:50:33.585Z] [INFO] GET /me - Status: 304
+[2026-02-14T14:50:33.736Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:50:33.741Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:50:33.806Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:50:34.017Z] [INFO] GET /stats - Status: 304
+[2026-02-14T14:50:35.897Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:50:35.903Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:50:35.920Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:50:35.923Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:50:35.939Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:50:35.947Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:50:35.976Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:35.989Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:35.993Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:50:36.020Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:50:36.026Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:50:36.049Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:50:36.056Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:50:36.076Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:36.567Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:36.572Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:50:36.587Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:50:36.594Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:50:36.640Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:36.662Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:36.683Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:36.694Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:50:38.413Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:50:38.416Z] [INFO] GET /api/fabric/cloth-types - IP: ::1
+[2026-02-14T14:50:38.419Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:50:38.429Z] [INFO] GET /api/fabric/designs - IP: ::1
+[2026-02-14T14:50:38.434Z] [INFO] GET /api/fabric/qualities - IP: ::1
+[2026-02-14T14:50:38.441Z] [INFO] GET /api/clients/all-products - IP: ::1
+[2026-02-14T14:50:38.475Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:38.485Z] [INFO] GET /cloth-types - Status: 304
+[2026-02-14T14:50:38.493Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:38.508Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:50:38.517Z] [INFO] GET /qualities - Status: 304
+[2026-02-14T14:50:38.522Z] [INFO] GET /designs - Status: 304
+[2026-02-14T14:50:38.538Z] [INFO] GET /all-products - Status: 304
+[2026-02-14T14:50:38.568Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:39.689Z] [INFO] GET /api/sales/stock - IP: ::1
+[2026-02-14T14:50:39.756Z] [INFO] GET /stock - Status: 304
+[2026-02-14T14:50:40.979Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:50:40.991Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:50:41.016Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:41.023Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:50:41.072Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:41.090Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:50:41.099Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:41.121Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:41.664Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:41.671Z] [INFO] GET /api/processing/board - IP: ::1
+[2026-02-14T14:50:41.737Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:41.755Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:50:41.820Z] [INFO] GET /board - Status: 304
+[2026-02-14T14:50:41.828Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:50:41.832Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:50:41.902Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:41.912Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:50:41.983Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:50:45.653Z] [INFO] GET /api/processing/fabricator - IP: ::1
+[2026-02-14T14:50:45.725Z] [INFO] GET /fabricator - Status: 304
+[2026-02-14T14:50:46.479Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:50:46.550Z] [INFO] GET / - Status: 304
+[2026-02-14T14:50:47.299Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:50:47.373Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:35.742Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:51:35.747Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:51:35.755Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:51:35.817Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:35.824Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:35.831Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:51:36.813Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:51:36.818Z] [INFO] GET /api/employees/roles - IP: ::1
+[2026-02-14T14:51:36.884Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:36.910Z] [INFO] GET /roles - Status: 304
+[2026-02-14T14:51:37.649Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:51:37.653Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:51:37.659Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:51:37.719Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:37.728Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:37.741Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:51:44.628Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:51:44.697Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:48.984Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:51:48.987Z] [INFO] GET /api/employees/roles - IP: ::1
+[2026-02-14T14:51:49.051Z] [INFO] GET / - Status: 304
+[2026-02-14T14:51:49.059Z] [INFO] GET /roles - Status: 304
+[2026-02-14T14:52:06.089Z] [INFO] POST /api/employees - IP: ::1
+[2026-02-14T14:52:06.168Z] [INFO] POST /api/employees - Status: 500
+[2026-02-14T14:52:13.856Z] [INFO] POST /api/employees - IP: ::1
+[2026-02-14T14:52:13.929Z] [INFO] POST /api/employees - Status: 500
+[2026-02-14T14:52:24.119Z] [INFO] POST /api/employees - IP: ::1
+[2026-02-14T14:52:24.196Z] [INFO] POST / - Status: 201
+[2026-02-14T14:52:24.204Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:52:24.283Z] [INFO] GET / - Status: 200
+[2026-02-14T14:52:24.304Z] [INFO] GET /api/employees/1/account - IP: ::1
+[2026-02-14T14:52:24.395Z] [INFO] GET /1/account - Status: 200
+[2026-02-14T14:56:46.521Z] [INFO] GET /api/auth/me - IP: ::1
+[2026-02-14T14:56:46.531Z] [INFO] GET /me - Status: 304
+[2026-02-14T14:56:46.668Z] [INFO] GET /api/dashboard/stats - IP: ::1
+[2026-02-14T14:56:46.672Z] [INFO] GET /api/dashboard/recent-orders - IP: ::1
+[2026-02-14T14:56:46.737Z] [INFO] GET /recent-orders - Status: 304
+[2026-02-14T14:56:46.945Z] [INFO] GET /stats - Status: 304
+[2026-02-14T14:56:48.595Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:56:48.599Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:56:48.606Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:56:48.663Z] [INFO] GET / - Status: 304
+[2026-02-14T14:56:48.675Z] [INFO] GET / - Status: 304
+[2026-02-14T14:56:48.696Z] [INFO] GET /colors - Status: 200
+[2026-02-14T14:56:54.058Z] [INFO] GET /api/attendance?date=2026-02-14 - IP: ::1
+[2026-02-14T14:56:54.063Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:56:54.140Z] [INFO] GET /?date=2026-02-14 - Status: 304
+[2026-02-14T14:56:54.144Z] [INFO] GET / - Status: 304
+[2026-02-14T14:56:54.666Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:56:54.674Z] [INFO] GET /api/employees/roles - IP: ::1
+[2026-02-14T14:56:54.748Z] [INFO] GET / - Status: 304
+[2026-02-14T14:56:54.758Z] [INFO] GET /roles - Status: 200
+[2026-02-14T14:56:54.787Z] [INFO] GET /api/employees/1/account - IP: ::1
+[2026-02-14T14:56:54.871Z] [INFO] GET /1/account - Status: 304
+[2026-02-14T14:57:13.977Z] [INFO] POST /api/employees - IP: ::1
+[2026-02-14T14:57:14.059Z] [INFO] POST / - Status: 201
+[2026-02-14T14:57:14.069Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:57:14.252Z] [INFO] GET / - Status: 200
+[2026-02-14T14:57:18.749Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:57:18.756Z] [INFO] GET /api/processing/board - IP: ::1
+[2026-02-14T14:57:18.835Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:18.854Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:57:18.916Z] [INFO] GET /board - Status: 304
+[2026-02-14T14:57:18.927Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:57:18.941Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:57:19.011Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:19.018Z] [INFO] GET /api/processing/available-stock - IP: ::1
+[2026-02-14T14:57:19.097Z] [INFO] GET /available-stock - Status: 304
+[2026-02-14T14:57:19.676Z] [INFO] GET /api/cutting - IP: ::1
+[2026-02-14T14:57:19.682Z] [INFO] GET /api/cutting/pending-orders - IP: ::1
+[2026-02-14T14:57:19.687Z] [INFO] GET /api/employees - IP: ::1
+[2026-02-14T14:57:19.695Z] [INFO] GET /api/fabric - IP: ::1
+[2026-02-14T14:57:19.759Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:19.765Z] [INFO] GET /pending-orders - Status: 304
+[2026-02-14T14:57:19.775Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:19.783Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:21.758Z] [INFO] GET /api/orders - IP: ::1
+[2026-02-14T14:57:21.841Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:25.074Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:57:25.166Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:32.212Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:57:32.294Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:49.552Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:57:49.555Z] [INFO] GET /api/items - IP: ::1
+[2026-02-14T14:57:49.560Z] [INFO] GET /api/fabric/colors - IP: ::1
+[2026-02-14T14:57:49.625Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:49.634Z] [INFO] GET / - Status: 304
+[2026-02-14T14:57:49.647Z] [INFO] GET /colors - Status: 304
+[2026-02-14T14:59:40.510Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T14:59:40.608Z] [INFO] POST /api/clients - Status: 500
+[2026-02-14T14:59:49.138Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T14:59:49.225Z] [INFO] POST / - Status: 201
+[2026-02-14T14:59:49.241Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T14:59:49.323Z] [INFO] GET / - Status: 200
+[2026-02-14T14:59:49.368Z] [INFO] GET /api/clients/1/products - IP: ::1
+[2026-02-14T14:59:49.374Z] [INFO] GET /api/clients/1/account - IP: ::1
+[2026-02-14T14:59:49.450Z] [INFO] GET /1/products - Status: 200
+[2026-02-14T14:59:49.459Z] [INFO] GET /1/account - Status: 304
+[2026-02-14T15:00:48.775Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:00:48.868Z] [INFO] POST / - Status: 201
+[2026-02-14T15:00:48.887Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:00:48.967Z] [INFO] GET / - Status: 200
+[2026-02-14T15:01:33.977Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:01:34.070Z] [INFO] POST / - Status: 201
+[2026-02-14T15:01:34.092Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:01:34.179Z] [INFO] GET / - Status: 200
+[2026-02-14T15:01:40.584Z] [INFO] GET /api/clients/3/products - IP: ::1
+[2026-02-14T15:01:40.588Z] [INFO] GET /api/clients/3/account - IP: ::1
+[2026-02-14T15:01:40.666Z] [INFO] GET /3/products - Status: 200
+[2026-02-14T15:01:40.669Z] [INFO] GET /3/account - Status: 200
+[2026-02-14T15:03:00.647Z] [INFO] GET /api/clients/1/account - IP: ::1
+[2026-02-14T15:03:00.642Z] [INFO] GET /api/clients/1/products - IP: ::1
+[2026-02-14T15:03:00.727Z] [INFO] GET /1/products - Status: 304
+[2026-02-14T15:03:00.730Z] [INFO] GET /1/account - Status: 304
+[2026-02-14T15:04:03.313Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:04:03.422Z] [INFO] POST / - Status: 201
+[2026-02-14T15:04:03.447Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:04:03.538Z] [INFO] GET / - Status: 200
+[2026-02-14T15:04:30.779Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:04:30.862Z] [INFO] POST / - Status: 201
+[2026-02-14T15:04:30.878Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:04:30.959Z] [INFO] GET / - Status: 200
+[2026-02-14T15:06:58.810Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:06:58.909Z] [INFO] POST / - Status: 201
+[2026-02-14T15:06:58.922Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:06:58.980Z] [INFO] GET / - Status: 200
+[2026-02-14T15:07:23.861Z] [INFO] GET /api/clients/3/products - IP: ::1
+[2026-02-14T15:07:23.864Z] [INFO] GET /api/clients/3/account - IP: ::1
+[2026-02-14T15:07:23.921Z] [INFO] GET /3/products - Status: 304
+[2026-02-14T15:07:23.932Z] [INFO] GET /3/account - Status: 304
+[2026-02-14T15:07:49.683Z] [INFO] POST /api/clients - IP: ::1
+[2026-02-14T15:07:49.741Z] [INFO] POST / - Status: 201
+[2026-02-14T15:07:49.754Z] [INFO] GET /api/clients - IP: ::1
+[2026-02-14T15:07:49.818Z] [INFO] GET / - Status: 200
+[2026-02-14T15:10:30.069Z] [INFO] Running startup checks...
+[2026-02-14T15:10:30.807Z] [INFO] Database check passed.
+[2026-02-14T15:10:30.808Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T15:10:31.268Z] [INFO] Running startup checks...
+[2026-02-14T15:10:31.781Z] [INFO] Database check passed.
+[2026-02-14T15:10:31.781Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T15:10:34.641Z] [INFO] Running startup checks...
+[2026-02-14T15:10:35.160Z] [INFO] Database check passed.
+[2026-02-14T15:10:35.161Z] [INFO] All startup checks passed. Server healthy.
+[2026-02-14T15:10:36.500Z] [INFO] Running startup checks...
+[2026-02-14T15:10:36.947Z] [INFO] Database check passed.
+[2026-02-14T15:10:36.948Z] [INFO] All startup checks passed. Server healthy.

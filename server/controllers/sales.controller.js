@@ -18,9 +18,9 @@ exports.getFinishedStock = async (req, res, next) => {
             FROM selling_stock ss
             JOIN org_dress od ON ss.org_dress_id = od.id
             JOIN organization org ON od.org_id = org.id
-            GROUP BY ss.org_dress_id, ss.size, ss.price, ss.brand, ss.remarks
-            ORDER BY ss.created_on DESC
-        `);
+            GROUP BY ss.org_dress_id, ss.size, ss.price, ss.brand, ss.remarks, od.org_dress_name, org.org_name
+            ORDER BY MAX(ss.created_on) DESC
+        `, []);
 
         res.status(200).json({
             success: true,
