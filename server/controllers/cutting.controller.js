@@ -387,12 +387,13 @@ exports.startCuttingJob = async (req, res, next) => {
                 createdJobIds.push(processId);
     
                 // 3. Insert Cutting Details (Usage Log) - ONLY IF FABRIC PROVIDED
+                // 3. Insert Cutting Details (Usage Log) - ONLY IF FABRIC PROVIDED
                 if (job.cloth_quantity_id && job.fabric_used) {
                     await connection.query(`
                         INSERT INTO cutting_details
                         (cutting_process_id, cloth_quantity_id, bal_cloth, cut_type, cut_rate)
                         VALUES (?, ?, ?, ?, ?)
-                    `, [processId, job.cloth_quantity_id, bal_cloth, job.cut_type || 'Standard', job.cut_rate || 0]); 
+                    `, [processId, job.cloth_quantity_id, bal_cloth, (job.cut_type && ['primary', 'secondary', 'pocket', 'kharcha'].includes(job.cut_type)) ? job.cut_type : 'primary', job.cut_rate || 0]); 
                 }
         }
         
@@ -613,12 +614,16 @@ exports.recordFabricUsage = async (req, res, next) => {
                 // 2. Calculate Balance
                 const bal_cloth = currentLen - usedLen;
 
+                // Sanitize cut_type
+                const validTypes = ['primary', 'secondary', 'pocket', 'kharcha'];
+                const sanitizedType = validTypes.includes(cut_type) ? cut_type : 'primary';
+
                 // 3. Insert Log (Standard Schema)
                 await connection.query(`
                     INSERT INTO cutting_details
                     (cutting_process_id, cloth_quantity_id, bal_cloth, cut_type, cut_rate)
                     VALUES (?, ?, ?, ?, ?)
-                `, [id, cloth_quantity_id, bal_cloth, cut_type, cut_rate]);
+                `, [id, cloth_quantity_id, bal_cloth, sanitizedType, cut_rate]);
 
                 // 4. Update Roll Length
                 await connection.query(

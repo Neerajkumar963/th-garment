@@ -142,7 +142,7 @@ export function RecordFabricModal({ isOpen, onClose, jobId, orgDressId, onSucces
                 payload.fabric_entries = [{
                     cloth_quantity_id: parseInt(rollId),
                     fabric_used: parseFloat(fabricUsed) || 0,
-                    cut_type: "Standard",
+                    cut_type: "primary",
                     cut_rate: 0
                 }];
             }
